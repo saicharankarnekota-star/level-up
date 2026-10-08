@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "LEVEL UP"
+description = "An interactive learning adventure for students ages 5–17, with lessons, missions, practice games, creative projects, and locally saved progress."
+version = "1.0.0"
+id = "artifacts/level-up"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25051
+
+[services.development]
+run = "pnpm --filter @workspace/level-up run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/level-up", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/level-up/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25051"
+BASE_PATH = "/"

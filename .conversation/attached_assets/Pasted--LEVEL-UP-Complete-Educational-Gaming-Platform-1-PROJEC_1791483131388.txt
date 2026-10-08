@@ -1,0 +1,1749 @@
+# LEVEL UP — Complete Educational Gaming Platform
+
+## 1. PROJECT OVERVIEW
+
+Build a modern, interactive educational gaming platform called **LEVEL UP** for students aged **5–17 years**.
+
+### Core idea
+
+LEVEL UP combines:
+
+- Education
+- Gamification
+- Interactive missions
+- Mini-games
+- Practice
+- Creative learning
+- Progress tracking
+- Learning assistance
+
+The goal is **not to replace schools, teachers, textbooks, or classrooms**.
+
+Instead, LEVEL UP adds an interactive digital learning layer that helps students:
+
+> **CHALLENGE → LEARN → PRACTICE → CREATE → PROGRESS**
+
+The platform should make learning feel like an achievable journey rather than a repetitive task.
+
+### Brand tagline
+
+> **LEVEL UP — Learn. Play. Create. Grow.**
+
+### Important positioning
+
+Do NOT describe traditional education as useless or ineffective.
+
+Do NOT claim that students universally hate studying.
+
+Instead communicate:
+
+> Students want to succeed, but the learning experience does not always create the same level of engagement for every learner.
+
+LEVEL UP addresses this opportunity through interactive learning experiences.
+
+---
+
+# 2. TARGET USERS
+
+The application should support three main user groups.
+
+## Student
+
+Primary user.
+
+Age range:
+
+- 5–8
+- 9–11
+- 12–14
+- 15–17
+
+Students should be able to:
+
+- Learn
+- Play educational games
+- Complete missions
+- Practice questions
+- Ask for learning help
+- Create educational content
+- Earn XP
+- Unlock badges
+- Track progress
+
+---
+
+## Teacher
+
+Teachers should eventually be able to:
+
+- Create classes
+- Add students
+- Assign missions
+- Assign quizzes
+- Monitor progress
+- View weak topics
+- Create learning activities
+- Review student creations
+- View class statistics
+
+---
+
+## Parent
+
+Parents should eventually be able to:
+
+- View learning progress
+- Monitor activity
+- See completed missions
+- View achievements
+- View learning time
+- See subjects being practiced
+- Receive progress summaries
+
+---
+
+# 3. AGE-BASED EXPERIENCE
+
+The application must adapt its interface and content structure according to age.
+
+## Age Group 1 — 5–8
+
+Interface:
+
+- Large buttons
+- Bright visual elements
+- Simple navigation
+- Minimal reading
+- Voice guidance
+- Animated characters
+- Short activities
+
+Subjects:
+
+- Basic Mathematics
+- English
+- Science
+- General Awareness
+- Creativity
+
+Example activities:
+
+> Count the stars  
+> Match the animals  
+> Identify colors  
+> Build simple words  
+> Explore planets
+
+---
+
+## Age Group 2 — 9–11
+
+Introduce:
+
+- More complex missions
+- Quizzes
+- Basic problem solving
+- Science experiments
+- Story creation
+- Beginner coding
+
+---
+
+## Age Group 3 — 12–14
+
+Introduce:
+
+- Advanced mathematics
+- Physics basics
+- Chemistry basics
+- Biology
+- Programming
+- Logic
+- Social studies
+- Creative projects
+
+---
+
+## Age Group 4 — 15–17
+
+Introduce:
+
+- Advanced mathematics
+- Physics
+- Chemistry
+- Biology
+- Computer Science
+- Programming
+- Career exploration
+- Competitive exam preparation
+
+---
+
+# 4. STREAM-BASED LEARNING
+
+For older students, allow stream selection.
+
+Options:
+
+### Science
+
+- Physics
+- Chemistry
+- Mathematics
+- Biology
+- Computer Science
+
+### Commerce
+
+- Accountancy
+- Economics
+- Business Studies
+- Mathematics
+
+### Humanities
+
+- History
+- Geography
+- Political Science
+- Economics
+- Psychology
+
+### Computer Science / IT
+
+- Programming
+- Data Structures
+- Web Development
+- Databases
+- Computer Networks
+- AI fundamentals
+
+The system should allow:
+
+> AGE → GRADE → CURRICULUM → STREAM → SUBJECT → TOPIC
+
+---
+
+# 5. APPLICATION STRUCTURE
+
+Create the following main modules.
+
+## Main Navigation
+
+```text
+HOME
+LEARN
+MISSIONS
+GAMES
+PRACTICE
+CREATE
+ACHIEVEMENTS
+PROFILE
+```
+
+For teachers:
+
+```text
+TEACHER DASHBOARD
+CLASSES
+ASSIGNMENTS
+STUDENTS
+ANALYTICS
+CONTENT
+```
+
+For parents:
+
+```text
+PARENT DASHBOARD
+PROGRESS
+ACTIVITY
+ACHIEVEMENTS
+REPORTS
+SETTINGS
+```
+
+---
+
+# 6. HOME DASHBOARD
+
+Create a visually impressive student dashboard.
+
+Display:
+
+- Student name
+- Avatar
+- Current level
+- XP
+- XP required for next level
+- Current streak
+- Daily goal
+- Missions completed
+- Badges earned
+
+Example:
+
+```text
+Good morning, Alex 👋
+
+Ready to LEVEL UP?
+
+Level 4
+1,240 XP
+🔥 7 Day Streak
+
+Today's Goal
+████████░░ 80%
+
+2 activities remaining
+```
+
+Include:
+
+### Continue Learning
+
+Show the last unfinished activity.
+
+### Today's Missions
+
+Show 3 recommended missions.
+
+### Quick Practice
+
+Show:
+
+- Math
+- Science
+- English
+- Coding
+
+### Learning Lifelines
+
+Show:
+
+- 💡 Hint
+- 🔎 Show Me
+- 🧩 Break It Down
+- 🤖 AI Tutor
+
+---
+
+# 7. LEARN MODULE
+
+Create a dedicated learning hub.
+
+Students can select:
+
+```text
+Subject
+↓
+Chapter
+↓
+Topic
+↓
+Lesson
+```
+
+Each lesson should contain:
+
+### Learn
+
+Simple explanation.
+
+### Visualize
+
+Illustration or animation.
+
+### Example
+
+Real-world example.
+
+### Try
+
+Small interactive question.
+
+### Challenge
+
+Mission connected to the topic.
+
+---
+
+# 8. MISSION SYSTEM
+
+Missions are one of the core features.
+
+Every mission should have:
+
+```text
+Mission Title
+Subject
+Difficulty
+Estimated Time
+Learning Objective
+Story
+Challenges
+Hints
+Reward
+```
+
+Example:
+
+## Fraction Galaxy
+
+Subject:
+
+> Mathematics
+
+Difficulty:
+
+> Easy
+
+Reward:
+
+> +80 XP
+
+Story:
+
+> You are an astronaut travelling through Fraction Galaxy. Solve the fraction challenges to repair your spaceship.
+
+Challenges:
+
+1. Identify fractions
+2. Compare fractions
+3. Add fractions
+4. Solve final challenge
+
+Completion:
+
+> Mission Complete 🎉
+
+Reward:
+
+> +80 XP
+
+---
+
+# 9. MISSION DIFFICULTY
+
+Use:
+
+- 🟢 Easy
+- 🟡 Medium
+- 🔴 Hard
+- 🟣 Expert
+
+Difficulty should be visible before starting.
+
+---
+
+# 10. GAME ZONE
+
+Create educational mini-games.
+
+Initial games:
+
+## Math Dash
+
+Students solve mathematical questions against a timer.
+
+Features:
+
+- Timer
+- Score
+- Combo
+- XP
+- Difficulty levels
+
+---
+
+## Memory Match
+
+Match:
+
+```text
+Concept ↔ Definition
+```
+
+Example:
+
+```text
+Photosynthesis ↔ Plants make food
+```
+
+---
+
+## Robot Logic
+
+Students guide a robot through a grid.
+
+Example:
+
+```text
+START
+↓
+RIGHT
+↓
+RIGHT
+↓
+UP
+↓
+GOAL
+```
+
+Teach:
+
+- Logic
+- Sequencing
+- Algorithms
+- Problem solving
+
+---
+
+## Word Wizard
+
+Vocabulary game.
+
+Students:
+
+- Match words
+- Complete sentences
+- Find synonyms
+- Find antonyms
+
+---
+
+# 11. PRACTICE MODULE
+
+Create a quiz system.
+
+Question types:
+
+- Multiple choice
+- True/false
+- Match the following
+- Fill in the blank
+- Ordering
+- Image-based questions
+
+Each question should provide immediate feedback.
+
+Correct:
+
+> 🎉 Great job!
+
+Incorrect:
+
+> Not quite. Try again.
+
+Do not immediately reveal the answer unless the student requests help.
+
+---
+
+# 12. LEARNING LIFELINES
+
+This is an important LEVEL UP feature.
+
+Provide:
+
+## Hint
+
+Give a clue.
+
+Do not give the answer.
+
+---
+
+## Show Me
+
+Show:
+
+- Diagram
+- Example
+- Visual explanation
+
+---
+
+## Break It Down
+
+Convert a complex problem into smaller steps.
+
+Example:
+
+Instead of:
+
+> Solve this equation.
+
+Show:
+
+```text
+Step 1 → Identify the unknown
+Step 2 → Move the constant
+Step 3 → Simplify
+Step 4 → Check your answer
+```
+
+---
+
+## AI Tutor
+
+Create an AI tutoring interface.
+
+The AI should:
+
+- Explain concepts
+- Answer questions
+- Give hints
+- Provide examples
+- Simplify explanations
+- Ask guiding questions
+- Adapt language to age
+
+IMPORTANT:
+
+The AI Tutor should encourage students to think.
+
+It should not simply provide answers to homework.
+
+Example:
+
+Student:
+
+> I don't understand fractions.
+
+AI Tutor:
+
+> No problem! Imagine you have one pizza. If you divide it into 4 equal pieces and eat one piece, what fraction of the pizza did you eat?
+
+Use a friendly educational tone.
+
+---
+
+# 13. CREATE STUDIO
+
+Create a module where students demonstrate what they learned.
+
+Options:
+
+```text
+🎬 Short Video
+📚 Story
+🎙️ Voice Explanation
+✨ Animation
+📝 Explanation
+```
+
+Example:
+
+After learning photosynthesis:
+
+> "Create a 30-second explanation of how plants make food."
+
+The student can create:
+
+- Story
+- Voice recording
+- Script
+- Simple animation
+- Video concept
+
+The purpose is:
+
+> **Don't just answer it. Explain it.**
+
+---
+
+# 14. XP SYSTEM
+
+Every learning action can generate XP.
+
+Example:
+
+```text
+Complete lesson      +20 XP
+Complete practice    +25 XP
+Complete mission     +80 XP
+Win mini-game        +40 XP
+Create project       +60 XP
+Daily goal           +50 XP
+```
+
+Do not reward random clicking.
+
+XP should primarily come from meaningful learning activity.
+
+---
+
+# 15. LEVEL SYSTEM
+
+Example:
+
+```text
+Level 1 → Explorer
+Level 2 → Learner
+Level 3 → Challenger
+Level 4 → Problem Solver
+Level 5 → Creator
+Level 6 → Master
+Level 7 → Expert
+```
+
+Display:
+
+```text
+LEVEL 4
+
+1,240 / 1,500 XP
+
+████████████░░░
+```
+
+When a user levels up:
+
+```text
+🎉 LEVEL UP!
+
+You reached Level 5!
+
+New mission category unlocked.
+```
+
+---
+
+# 16. BADGES
+
+Create achievements.
+
+Examples:
+
+### 🚀 Mission Starter
+
+Complete your first mission.
+
+### 🔥 7-Day Streak
+
+Learn for seven consecutive days.
+
+### 🧠 Quiz Master
+
+Complete 10 quizzes.
+
+### 🎨 Creator
+
+Create your first learning project.
+
+### 🌟 Explorer
+
+Try multiple subjects.
+
+### 🏆 Level 5
+
+Reach Level 5.
+
+### 💡 Problem Solver
+
+Complete 20 challenging questions.
+
+---
+
+# 17. STREAK SYSTEM
+
+Display:
+
+```text
+🔥 7 DAY STREAK
+```
+
+Calendar:
+
+```text
+MON ✓
+TUE ✓
+WED ✓
+THU ✓
+FRI ✓
+SAT ✓
+SUN ○
+```
+
+Encourage consistency without creating unhealthy pressure.
+
+---
+
+# 18. DAILY GOALS
+
+Example:
+
+```text
+TODAY'S GOAL
+
+☑ Complete one lesson
+☑ Complete one mission
+☐ Practice 5 questions
+```
+
+Completion:
+
+> 🎉 Daily Goal Complete!
+
+Reward:
+
+> +50 XP
+
+---
+
+# 19. PROGRESS DASHBOARD
+
+Students should be able to see:
+
+### Overall Progress
+
+```text
+Overall      78%
+Mathematics  82%
+Science      74%
+English      88%
+Coding       65%
+```
+
+### Activity
+
+Show:
+
+- Lessons completed
+- Missions completed
+- Practice questions
+- Games played
+- Projects created
+
+---
+
+# 20. PROFILE PAGE
+
+Display:
+
+```text
+Avatar
+Student Name
+Age
+Grade
+Level
+XP
+Streak
+Badges
+Subjects
+Progress
+```
+
+Allow students to customize:
+
+- Avatar
+- Name
+- Theme
+- Interests
+
+---
+
+# 21. SEARCH
+
+Create global search.
+
+Students should be able to search:
+
+```text
+Fractions
+Photosynthesis
+Java
+Grammar
+Algebra
+World War II
+```
+
+Search results should display:
+
+```text
+Lessons
+Missions
+Games
+Practice
+```
+
+---
+
+# 22. TEACHER DASHBOARD
+
+Create a separate teacher interface.
+
+Teacher homepage:
+
+```text
+Good morning, Teacher!
+
+Students: 32
+Active today: 27
+Assignments: 4
+Average completion: 81%
+```
+
+Create:
+
+### Class Management
+
+```text
+Class 8A
+Class 9B
+Class 10A
+```
+
+### Assign Mission
+
+Teacher selects:
+
+```text
+Subject
+Topic
+Mission
+Deadline
+Students
+```
+
+### Student Analytics
+
+Display:
+
+- Completion rate
+- Quiz performance
+- Topic performance
+- Practice frequency
+- Mission completion
+- Areas requiring support
+
+---
+
+# 23. PARENT DASHBOARD
+
+Create a simple parent-friendly dashboard.
+
+Display:
+
+```text
+Alex's Learning
+
+This Week
+
+Learning time: 4h 25m
+Missions: 8
+Quizzes: 5
+Projects: 2
+XP earned: 620
+```
+
+Use positive language.
+
+Do not create fear-based notifications.
+
+---
+
+# 24. LEADERBOARD
+
+Create optional leaderboards.
+
+Categories:
+
+- Friends
+- Class
+- School
+- Weekly
+- Monthly
+
+Avoid making leaderboard position the primary measure of learning.
+
+Also display personal progress:
+
+> "You improved 18% this week."
+
+---
+
+# 25. NOTIFICATION SYSTEM
+
+Examples:
+
+```text
+🎯 New mission available
+
+🔥 Your streak is active
+
+🏆 You unlocked a badge
+
+📚 Your teacher assigned a mission
+
+🎨 Your project is ready to review
+```
+
+---
+
+# 26. UI / UX DESIGN
+
+The application must look like a **modern educational game**, not a traditional school portal.
+
+## Design direction
+
+Use:
+
+- Dark navy background
+- Cyan
+- Purple
+- Green
+- Yellow
+- Pink accents
+- Rounded cards
+- Soft shadows
+- Gradient buttons
+- Animated progress bars
+- Friendly icons
+- Modern typography
+
+Recommended font:
+
+> Nunito
+
+---
+
+# 27. RESPONSIVE DESIGN
+
+The website must work on:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Desktop:
+
+```text
+Sidebar
+Content
+```
+
+Mobile:
+
+```text
+Top navigation
+Content
+Bottom/mobile menu
+```
+
+Cards should stack automatically.
+
+---
+
+# 28. ANIMATIONS
+
+Use subtle animations.
+
+Examples:
+
+- Button hover
+- Card hover
+- XP animation
+- Level-up animation
+- Badge unlock animation
+- Progress bar animation
+- Mission completion animation
+- Confetti for major achievements
+
+Avoid excessive animations that distract from learning.
+
+---
+
+# 29. ACCESSIBILITY
+
+Include:
+
+- Good contrast
+- Keyboard navigation
+- Large clickable controls
+- Readable text
+- Alt text
+- Screen-reader-friendly labels
+- Reduced-motion option
+
+---
+
+# 30. GAMIFICATION RULE
+
+Gamification should support learning.
+
+Do NOT create mechanics that encourage:
+
+- Endless usage
+- Addiction
+- Excessive pressure
+- Manipulation
+
+The purpose is:
+
+> **Make meaningful learning more engaging.**
+
+---
+
+# 31. DATA MODEL
+
+Design the backend database around these entities.
+
+```text
+User
+StudentProfile
+TeacherProfile
+ParentProfile
+Subject
+Grade
+Stream
+Chapter
+Topic
+Lesson
+Mission
+MissionChallenge
+Question
+Quiz
+Game
+Achievement
+Badge
+XPTransaction
+Streak
+StudentProgress
+Creation
+Assignment
+Classroom
+Notification
+```
+
+---
+
+# 32. STUDENT DATA
+
+Example:
+
+```json
+{
+  "name": "Alex",
+  "age": 13,
+  "grade": 8,
+  "stream": null,
+  "level": 4,
+  "xp": 1240,
+  "streak": 7,
+  "missionsCompleted": 12,
+  "badges": [
+    "Mission Starter",
+    "7 Day Streak"
+  ]
+}
+```
+
+---
+
+# 33. BACKEND
+
+Build the application with a scalable architecture.
+
+Recommended:
+
+### Frontend
+
+React / Next.js
+
+### Styling
+
+Tailwind CSS
+
+### Backend
+
+Node.js / Next.js API routes
+
+### Database
+
+Supabase or Firebase
+
+### Authentication
+
+Email/password
+
+Optional:
+
+- Google login
+- School login
+
+---
+
+# 34. AI INTEGRATION
+
+Create an AI Tutor service.
+
+The AI should receive:
+
+```text
+Student age
+Grade
+Subject
+Topic
+Question
+Previous attempts
+Requested help type
+```
+
+Possible help types:
+
+```text
+HINT
+EXAMPLE
+BREAK_DOWN
+VISUAL_EXPLANATION
+SIMPLIFY
+```
+
+The AI should return structured responses.
+
+Example:
+
+```json
+{
+  "type": "hint",
+  "message": "Think about how many equal parts the whole is divided into.",
+  "nextStep": "Try identifying the denominator."
+}
+```
+
+---
+
+# 35. SAFETY FOR CHILDREN
+
+Because the platform targets minors, prioritize safety.
+
+Include:
+
+- Minimal personal information collection
+- No public student contact information
+- Safe usernames
+- Moderated student-created content
+- Teacher/parent controls
+- Report functionality
+- Safe AI responses
+- No inappropriate recommendations
+- Secure authentication
+- Privacy controls
+
+Do not expose sensitive student information publicly.
+
+---
+
+# 36. CURRICULUM SYSTEM
+
+Make curriculum content modular.
+
+Structure:
+
+```text
+Age
+ ↓
+Grade
+ ↓
+Subject
+ ↓
+Chapter
+ ↓
+Topic
+ ↓
+Lesson
+ ↓
+Practice
+ ↓
+Mission
+ ↓
+Creation
+```
+
+This allows the platform to support different educational boards and curricula later.
+
+---
+
+# 37. INITIAL CONTENT
+
+Create sample content for:
+
+### Mathematics
+
+- Fractions
+- Decimals
+- Algebra
+- Geometry
+- Percentages
+
+### Science
+
+- Matter
+- Plants
+- Human body
+- Energy
+- Environment
+
+### English
+
+- Vocabulary
+- Grammar
+- Reading
+- Storytelling
+- Writing
+
+### Coding
+
+- Logic
+- Algorithms
+- Variables
+- Conditions
+- Loops
+
+Use enough demo data to make the application feel alive.
+
+---
+
+# 38. HOME PAGE STORY
+
+The first screen should communicate the concept immediately.
+
+Headline:
+
+> **Ready to Level Up Your Learning?**
+
+Subheadline:
+
+> Turn lessons into missions, challenges and creative adventures.
+
+Primary button:
+
+> **Start a Mission**
+
+Secondary button:
+
+> **Explore Learning**
+
+Show:
+
+```text
+XP
+Level
+Streak
+Daily Goal
+```
+
+---
+
+# 39. MISSION FLOW
+
+Implement this exact flow:
+
+```text
+Mission List
+      ↓
+Mission Details
+      ↓
+Learning Objective
+      ↓
+Challenge
+      ↓
+Student Answer
+      ↓
+Correct / Incorrect
+      ↓
+Hint if needed
+      ↓
+Retry
+      ↓
+Mission Complete
+      ↓
+XP Reward
+      ↓
+Achievement Check
+```
+
+---
+
+# 40. QUIZ FLOW
+
+```text
+Start Quiz
+ ↓
+Question
+ ↓
+Answer
+ ↓
+Instant Feedback
+ ↓
+Next Question
+ ↓
+Final Score
+ ↓
+XP Reward
+ ↓
+Progress Update
+```
+
+---
+
+# 41. CREATION FLOW
+
+```text
+Choose Creation Type
+ ↓
+Select Topic
+ ↓
+Create
+ ↓
+Preview
+ ↓
+Save
+ ↓
+Earn XP
+ ↓
+Add to Portfolio
+```
+
+---
+
+# 42. PORTFOLIO
+
+Create a student portfolio.
+
+Display:
+
+```text
+My Creations
+
+🎬 Science Explanation
+📚 Fraction Story
+🎙️ English Vocabulary
+✨ Solar System Animation
+```
+
+This allows students to show what they have learned.
+
+---
+
+# 43. PERFORMANCE REQUIREMENTS
+
+The application should:
+
+- Load quickly
+- Use reusable components
+- Avoid unnecessary dependencies
+- Be responsive
+- Store state correctly
+- Handle empty states
+- Handle errors gracefully
+- Use loading indicators
+- Avoid broken navigation
+
+---
+
+# 44. COMPONENT ARCHITECTURE
+
+Use reusable components such as:
+
+```text
+Navbar
+Sidebar
+MobileNav
+HeroSection
+StatCard
+MissionCard
+LessonCard
+GameCard
+QuizCard
+ProgressBar
+XPBar
+BadgeCard
+AchievementCard
+LifelineCard
+CreateCard
+Modal
+Toast
+SearchBar
+Avatar
+Leaderboard
+```
+
+---
+
+# 45. FILE STRUCTURE
+
+Use a clean structure similar to:
+
+```text
+level-up/
+│
+├── app/
+│   ├── page
+│   ├── learn/
+│   ├── missions/
+│   ├── games/
+│   ├── practice/
+│   ├── create/
+│   ├── achievements/
+│   ├── profile/
+│   ├── teacher/
+│   └── parent/
+│
+├── components/
+│   ├── navigation/
+│   ├── dashboard/
+│   ├── missions/
+│   ├── games/
+│   ├── quiz/
+│   ├── progress/
+│   └── common/
+│
+├── lib/
+│   ├── database
+│   ├── auth
+│   ├── ai
+│   └── gamification
+│
+├── data/
+│   ├── subjects
+│   ├── lessons
+│   ├── missions
+│   └── questions
+│
+├── public/
+│
+└── README.md
+```
+
+---
+
+# 46. MVP PRIORITY
+
+Build the application in phases.
+
+## Phase 1 — Working MVP
+
+Must include:
+
+- Student dashboard
+- Learn
+- Missions
+- Games
+- Practice
+- Create
+- Achievements
+- Profile
+- XP
+- Levels
+- Streak
+- Local persistence
+
+---
+
+## Phase 2 — Backend
+
+Add:
+
+- Authentication
+- Database
+- Student accounts
+- Teacher accounts
+- Parent accounts
+- Cloud progress
+
+---
+
+## Phase 3 — AI
+
+Add:
+
+- AI Tutor
+- Hint generation
+- Explanation generation
+- Question generation
+- Learning assistance
+
+---
+
+## Phase 4 — Advanced Platform
+
+Add:
+
+- Teacher dashboard
+- Parent dashboard
+- Curriculum management
+- Analytics
+- School integration
+- Multilingual support
+
+---
+
+# 47. DEMO EXPERIENCE
+
+The application must be impressive during a hackathon demonstration.
+
+The demo should follow:
+
+```text
+LOGIN
+ ↓
+HOME DASHBOARD
+ ↓
+SELECT SCIENCE
+ ↓
+OPEN MATTER LAB
+ ↓
+START MISSION
+ ↓
+ANSWER QUESTION
+ ↓
+GET STUCK
+ ↓
+USE BREAK IT DOWN
+ ↓
+UNDERSTAND
+ ↓
+COMPLETE MISSION
+ ↓
++100 XP
+ ↓
+BADGE UNLOCK
+ ↓
+CREATE EXPLANATION
+ ↓
+VIEW PROFILE
+ ↓
+SEE PROGRESS
+```
+
+The entire flow should work without dead buttons.
+
+---
+
+# 48. IMPORTANT DESIGN PRINCIPLE
+
+Do not make the application look like:
+
+> "A school website with game icons."
+
+Make it feel like:
+
+> **A learning adventure platform that happens to teach curriculum.**
+
+However, educational clarity must always remain more important than visual effects.
+
+---
+
+# 49. ERROR / EMPTY STATES
+
+Every module should have meaningful states.
+
+Example:
+
+```text
+No missions yet
+
+Your next adventure is waiting.
+```
+
+For search:
+
+```text
+No results found.
+
+Try searching for Math, Science, English or Coding.
+```
+
+For achievements:
+
+```text
+Your first badge is waiting!
+
+Complete your first mission to unlock it.
+```
+
+---
+
+# 50. FINAL REQUIREMENT
+
+Build the application as a **fully working prototype**, not a static UI.
+
+Every major button must perform an action.
+
+The following must actually work:
+
+- Navigation
+- Search
+- Mission opening
+- Mission completion
+- XP updates
+- Level updates
+- Daily goals
+- Quiz interaction
+- Game interaction
+- Achievement unlocking
+- Creation saving
+- Profile statistics
+- Local progress persistence
+- Responsive navigation
+
+Use realistic demo data.
+
+Do not use placeholder buttons such as:
+
+> "Coming Soon"
+
+unless the feature genuinely requires a future backend.
+
+---
+
+# 51. FINAL PRODUCT MESSAGE
+
+The application should communicate this idea throughout the experience:
+
+> **We are not replacing education with games.**
+
+> **We are using interactive design to make learning more engaging, active and meaningful.**
+
+Core journey:
+
+# CHALLENGE → LEARN → PRACTICE → CREATE → PROGRESS
+
+Final branding:
+
+# LEVEL UP
+
+### Learn. Play. Create. Grow.
+
+---
+
+# 52. DEVELOPMENT INSTRUCTION TO THE AI CODING AGENT
+
+You are an expert full-stack product engineer and UI/UX designer.
+
+Build the complete LEVEL UP application described above.
+
+Do not only generate screenshots or static HTML.
+
+Create a functional application with:
+
+1. Clean architecture
+2. Reusable components
+3. Responsive UI
+4. Working navigation
+5. Working interactions
+6. Real application state
+7. Persistent demo data
+8. Error handling
+9. Accessible components
+10. Scalable backend architecture
+
+Start by building the **MVP completely**, then structure the code so authentication, database, AI Tutor, teacher dashboard and parent dashboard can be added without rewriting the application.
+
+Prioritize:
+
+**Functionality → User Experience → Visual Design → Scalability**
+
+The final result should feel like a polished educational gaming startup product suitable for a **student demo, hackathon presentation and future full-stack development**.
