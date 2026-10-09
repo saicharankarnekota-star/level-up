@@ -8,7 +8,7 @@ export interface StoryboardScene {
   visualGraphic: 'apples_intro' | 'apples_add' | 'number_line_forward' | 'pause_interactive_add'
                 | 'honey_intro' | 'honey_takeaway' | 'number_line_backward' | 'pause_interactive_sub'
                 | 'spaceships_intro' | 'repeated_addition' | 'array_grid' | 'pause_interactive_mul'
-                | 'kingdom_mission' | 'dragon_intro';
+                | 'kingdom_add' | 'kingdom_sub' | 'kingdom_mul' | 'dragon_intro';
   interactivePrompt?: {
     question: string;
     choices: string[];
@@ -339,7 +339,7 @@ export const mathAdventureLevels: MathAdventureLevel[] = [
         title: 'Mission 1 — The Addition Shrine',
         voiceOverScript: '“You reach the first ancient tower. The gate needs 6 golden coins, and then 4 more silver coins to open the gate. Which operation brings two coin pouches together? 6 + 4 = 10!”',
         subtitle: 'Addition combines: 6 coins + 4 coins = 10 coins!',
-        visualGraphic: 'kingdom_mission',
+        visualGraphic: 'kingdom_add',
       },
       {
         id: 'l4-s2',
@@ -348,7 +348,7 @@ export const mathAdventureLevels: MathAdventureLevel[] = [
         title: 'Mission 2 — The Subtraction Vault',
         voiceOverScript: '“Inside the vault, you start with 12 magical gems. A mysterious potion requires giving away 5 gems into the fountain. Subtraction finds what remains: 12 - 5 = 7 gems left!”',
         subtitle: 'Subtraction separates: 12 gems - 5 gems = 7 gems remaining.',
-        visualGraphic: 'kingdom_mission',
+        visualGraphic: 'kingdom_sub',
       },
       {
         id: 'l4-s3',
@@ -357,7 +357,7 @@ export const mathAdventureLevels: MathAdventureLevel[] = [
         title: 'Mission 3 — The Multiplication Treasury',
         voiceOverScript: '“To light the kingdom beacons, you must fill 4 treasure chests with 3 gems each. Equal groups require multiplication: 4 chests × 3 gems = 12 gems in total!”',
         subtitle: 'Multiplication groups: 4 chests × 3 gems = 12 gems total.',
-        visualGraphic: 'kingdom_mission',
+        visualGraphic: 'kingdom_mul',
       },
     ],
     exploreActivity: {
@@ -419,16 +419,16 @@ export const mathAdventureLevels: MathAdventureLevel[] = [
       { id: 'maths-dragon-boss', name: 'The Maths Dragon', type: 'Boss Battle', description: 'Defeat the dragon in 4 rounds of progressive difficulty: single-digit, two-digit, word problems, and mixed operations!' },
     ],
     quizQuestions: [
-      { prompt: 'Round 1: 9 + 8 = ?', choices: ['16', '17', '18', '15'], correct: '17', explanation: '9 + 8 = 17.' },
-      { prompt: 'Round 1: 14 - 6 = ?', choices: ['8', '7', '9', '6'], correct: '8', explanation: '14 - 6 = 8.' },
-      { prompt: 'Round 1: 7 × 3 = ?', choices: ['21', '24', '18', '20'], correct: '21', explanation: '7 × 3 = 21.' },
-      { prompt: 'Round 2: 24 + 18 = ?', choices: ['40', '42', '44', '38'], correct: '42', explanation: '24 + 18 = 42.' },
-      { prompt: 'Round 2: 50 - 23 = ?', choices: ['27', '37', '23', '26'], correct: '27', explanation: '50 - 23 = 27.' },
-      { prompt: 'Round 3: An orchard has 6 rows of apple trees with 8 trees in each row. Total trees?', choices: ['48', '42', '54', '14'], correct: '48', explanation: '6 × 8 = 48 trees.' },
-      { prompt: 'Round 3: A bus starts with 35 passengers. 12 get off and 8 get on. How many now?', choices: ['31', '33', '29', '30'], correct: '31', explanation: '35 - 12 = 23, then 23 + 8 = 31.' },
-      { prompt: 'Round 4: Solve 5 × 6 + 10 = ?', choices: ['40', '35', '45', '50'], correct: '40', explanation: '5 × 6 = 30, and 30 + 10 = 40.' },
-      { prompt: 'Round 4: Which expression equals 24?', choices: ['3 × 8', '15 + 8', '30 - 7', '4 × 7'], correct: '3 × 8', explanation: '3 × 8 = 24.' },
-      { prompt: 'Final Strike: 100 - 4 × 10 = ?', choices: ['60', '960', '40', '70'], correct: '60', explanation: 'Order of operations: 4 × 10 = 40. Then 100 - 40 = 60!' },
+      { prompt: 'Round 1: 9 + 8 = ?', choices: ['16', '17', '18', '15'], correct: '17', explanation: '9 + 8 = 17. Make a ten: 9 + 1 = 10, then 10 + 7 = 17.' },
+      { prompt: 'Round 1: 14 − 6 = ?', choices: ['8', '7', '9', '20'], correct: '8', explanation: '14 − 6 = 8. Hop back 6 from 14.' },
+      { prompt: 'Round 1: 3 groups of 2 = ?', choices: ['6', '5', '8', '32'], correct: '6', explanation: '2 + 2 + 2 = 6.' },
+      { prompt: 'Round 2: 24 + 10 = ?', choices: ['34', '25', '44', '14'], correct: '34', explanation: 'Adding 10 adds one more ten: 24 + 10 = 34.' },
+      { prompt: 'Round 2: 50 − 20 = ?', choices: ['30', '70', '48', '3'], correct: '30', explanation: '5 tens − 2 tens = 3 tens = 30.' },
+      { prompt: 'Round 3: A tray has 2 rows of 5 cupcakes. How many cupcakes?', choices: ['10', '7', '12', '25'], correct: '10', explanation: '5 + 5 = 10 cupcakes.' },
+      { prompt: 'Round 3: A bus has 12 children. 4 get off and 3 get on. How many now?', choices: ['11', '19', '9', '13'], correct: '11', explanation: '12 − 4 = 8, then 8 + 3 = 11.' },
+      { prompt: 'Round 4: Which number has 6 tens and 2 ones?', choices: ['62', '26', '8', '602'], correct: '62', explanation: '6 tens = 60, plus 2 ones = 62.' },
+      { prompt: 'Round 4: Which sum equals 15?', choices: ['8 + 7', '9 + 5', '6 + 6', '10 + 4'], correct: '8 + 7', explanation: '8 + 7 = 15.' },
+      { prompt: 'Final Strike: 35 + 25 = ?', choices: ['60', '50', '510', '70'], correct: '60', explanation: 'Tens: 30 + 20 = 50. Ones: 5 + 5 = 10. 50 + 10 = 60!' },
     ],
     unlockThreshold: 70,
     badgeName: 'Maths Champion Dragon Slayer',

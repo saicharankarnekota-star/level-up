@@ -49,148 +49,156 @@ export interface AvatarConfig {
   aura: AvatarAura;
 }
 
-export interface Profile {
-  name: string;
-  age: number;
-  grade: string;
-  avatar: string; // legacy single letter fallback
-  avatarConfig: AvatarConfig;
-  interests: string[];
-  xp: number;
-  level: number;
-  streak: number; // day to day strike
-  streakShields: number;
-  lastActiveDate: string;
-  claimedStreakDates: string[]; // YYYY-MM-DD
+// ---------- Learning content ----------
+
+export type Grade = 1 | 2;
+export type Subject = 'Math' | 'Science';
+
+export type VisualizerKey =
+  | 'tenFrame'
+  | 'numberLine'
+  | 'compare'
+  | 'baseTen'
+  | 'array'
+  | 'shapes'
+  | 'measure'
+  | 'pattern'
+  | 'clock'
+  | 'coins'
+  | 'fraction'
+  | 'pictograph'
+  | 'sortBins'
+  | 'plantParts'
+  | 'senses'
+  | 'weather'
+  | 'dayNight'
+  | 'lifeCycle';
+
+export type VisualizerParams = Record<string, unknown>;
+
+export interface Question {
+  id: string;
+  topicId: string;
+  prompt: string;
+  /** Optional emoji picture shown above the choices. */
+  picture?: string;
+  choices: string[];
+  answer: string;
+  hint: string;
+  why: string;
+  /** Explanation keyed by a wrong choice. */
+  misconceptions?: Record<string, string>;
+  /** Visualizer params that re-create this question on screen ("Show me"). */
+  show?: VisualizerParams;
 }
 
-export interface Activity {
-  lessonsCompleted: number;
-  missionsCompleted: number;
+export interface LearnCard {
+  emoji: string;
+  title: string;
+  text: string;
+}
+
+export interface Topic {
+  id: string;
+  grade: Grade;
+  subject: Subject;
+  title: string;
+  emoji: string;
+  blurb: string;
+  visualizer: VisualizerKey;
+  visualizerParams?: VisualizerParams;
+  /** What the child should try in the visualizer. */
+  exploreGoal: string;
+  /** Story-style narrator script read at the start of the topic. */
+  narration?: string;
+  learnCards: LearnCard[];
+  realLife: string;
+  generate: () => Question;
+}
+
+export interface MissionStep {
+  narration: string;
+  question: Question;
+}
+
+export interface Mission {
+  id: string;
+  grade: Grade;
+  subject: Subject;
+  title: string;
+  emoji: string;
+  intro: string;
+  outro: string;
+  xpReward: number;
+  steps: MissionStep[];
+}
+
+// ---------- Saved progress ----------
+
+export interface TopicProgress {
+  visualized: boolean;
+  learned: boolean;
+  stars: number; // best 0-3
+  rounds: number;
+}
+
+export interface DayLog {
+  activities: number;
+  xp: number;
+  cappedXp: number;
+  goalMet: boolean;
+}
+
+export interface Lifelines {
+  fiftyFifty: number;
+  hint: number;
+  shield: number;
+  refilledOn: string;
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  text: string;
+  topicId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfileStats {
   questionsAnswered: number;
+  correctAnswers: number;
   gamesPlayed: number;
-  creationsCount: number;
-  dailyGoal: number;
-  lifelinesUsed: number;
   mistakesReviewed: number;
 }
 
-export interface Creation {
+export interface ProfileData {
   id: string;
-  title: string;
-  type: string;
-  topic: string;
-  subject: string;
-  content: string;
+  name: string;
+  grade: Grade;
+  avatarConfig: AvatarConfig;
   createdAt: string;
+  xp: number;
+  streak: number;
+  bestStreak: number;
+  shields: number;
+  lastActiveDate: string | null;
+  activeDates: string[];
+  goalDays: number;
+  topics: Record<string, TopicProgress>;
+  awarded: Record<string, true>;
+  badges: Record<string, string>;
+  daily: Record<string, DayLog>;
+  lifelines: Lifelines;
+  stats: ProfileStats;
+  gameBest: Record<string, number>;
+  adventureCompleted: number[];
+  missionsCompleted: string[];
+  notes: Note[];
 }
 
-export interface LifelineInventory {
-  fiftyFifty: number;
-  aiClue: number;
-  realLife: number;
-  secondChance: number;
-}
-
-export interface QuestionMisconception {
-  studentAnswer: string;
-  misconception: string;
-  whyWrong: string;
-  keyRule: string;
-}
-
-export interface SyllabusChapter {
-  id: string;
-  grade: string;
-  subject: 'Math' | 'Science';
-  chapterNumber: number;
-  chapterTitle: string;
-  description: string;
-  topics: string[];
-}
-
-export interface PracticeQuestion {
-  id: string;
-  subject: 'Math' | 'Science' | 'Nature' | 'Engineering';
-  topic: string;
-  grade: string; // e.g. 'Grade 1', 'Grade 5', 'Grade 10'
-  gradeLevel: string; // e.g. 'Grade 5'
-  chapter?: string;
-  q: string;
-  choices: string[];
-  answer: string;
-  why: string;
-  misconceptions: Record<string, QuestionMisconception>; // key is choice string
-  realLifeExample: {
-    headline: string;
-    scenario: string;
-    takeaway: string;
-  };
-  clueHint: string;
-}
-
-export interface SubjectLesson {
-  id: string;
-  title: string;
-  topic: string;
-  subject: 'Math' | 'Science' | 'Nature' | 'Engineering';
-  grades: string[]; // e.g. ['Grade 4', 'Grade 5', 'Grade 6']
-  chapter?: string;
-  age: string;
-  length: string;
-  description: string;
-  palette: string;
-  glyph: string;
-  tags: string[];
-  bigIdea: string;
-  inRealLife: {
-    title: string;
-    story: string;
-    didYouKnow: string;
-  };
-  checkQuestion: {
-    prompt: string;
-    choices: string[];
-    correct: string;
-    explanation: string;
-  };
-}
-
-export interface MissionChallenge {
-  prompt: string;
-  options: string[];
-  correct: string;
-  teach: string;
-  realLifeScenario: string;
-  misconceptionAlert: string;
-}
-
-export interface MissionData {
-  id: string;
-  title: string;
-  subject: 'Math' | 'Science';
-  grades: string[];
-  theme: string;
-  description: string;
-  tags: string[];
-  estimatedTime: string;
-  badgeReward: string;
-  xpReward: number;
-  challenges: MissionChallenge[];
-}
-
-export interface AppData {
-  profile: Profile;
-  activity: Activity;
-  mission: {
-    completed: boolean;
-    currentStep: number;
-    activeMissionId?: string;
-  };
-  completedMissions: string[];
-  unlockedAdventureLevels?: number[];
-  creations: Creation[];
-  badges: string[];
-  games: Record<string, number>;
-  lifelines: LifelineInventory;
+export interface SavedState {
+  version: 2;
+  activeId: string | null;
+  profiles: Record<string, ProfileData>;
 }

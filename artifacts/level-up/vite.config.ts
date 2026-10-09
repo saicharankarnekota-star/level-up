@@ -9,6 +9,12 @@ const rawPort = process.env.PORT || '3000';
 const port = Number(rawPort);
 const basePath = process.env.BASE_PATH || '/';
 
+// Cross-origin isolation lets the in-browser TTS model use multithreaded WASM.
+const isolationHeaders = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Embedder-Policy': 'credentialless',
+};
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -42,6 +48,9 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   root: path.resolve(import.meta.dirname),
+  worker: {
+    format: 'es',
+  },
   build: {
     outDir: path.resolve(import.meta.dirname, 'dist/public'),
     emptyOutDir: true,
@@ -51,6 +60,7 @@ export default defineConfig({
     strictPort: false,
     host: '0.0.0.0',
     allowedHosts: true,
+    headers: isolationHeaders,
     fs: {
       strict: true,
     },
@@ -59,5 +69,6 @@ export default defineConfig({
     port,
     host: '0.0.0.0',
     allowedHosts: true,
+    headers: isolationHeaders,
   },
 });

@@ -4,6 +4,15 @@
   "installCommand": "corepack enable && pnpm install",
   "buildCommand": "pnpm --dir artifacts/level-up build",
   "outputDirectory": "artifacts/level-up/dist/public",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "credentialless" }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
