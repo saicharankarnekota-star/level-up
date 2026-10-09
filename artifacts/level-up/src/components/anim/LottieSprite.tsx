@@ -9,6 +9,9 @@ export type LottieName =
 
 const cache = new Map<LottieName, Promise<unknown>>();
 
+/** Paused/reduced-motion frame for files whose first frame is blank. */
+const STILL_FRAME: Partial<Record<LottieName, number>> = { rocket: 30, trophy: 85 };
+
 function loadAnimation(name: LottieName) {
   let p = cache.get(name);
   if (!p) {
@@ -34,6 +37,8 @@ export interface LottieSpriteProps {
   segment?: [number, number];
   /** Changing this value restarts the animation (or segment) from the start. */
   playKey?: string | number;
+  /** Frame shown when paused or with reduced motion (some files start on a blank frame). */
+  stillFrame?: number;
   speed?: number;
   flip?: boolean;
   className?: string;
@@ -45,7 +50,7 @@ export interface LottieSpriteProps {
 }
 
 export function LottieSprite({
-  name, loop = true, play = true, segment, playKey, speed = 1, flip, className = '', style, label, fallback = null, onComplete,
+  name, loop = true, play = true, segment, playKey, stillFrame = STILL_FRAME[name] ?? 0, speed = 1, flip, className = '', style, label, fallback = null, onComplete,
 }: LottieSpriteProps) {
   const [data, setData] = useState<unknown>(null);
   const [failed, setFailed] = useState(false);
@@ -63,12 +68,11 @@ export function LottieSprite({
     const a = ref.current;
     if (!a || !data) return;
     a.setSpeed(speed);
-    if (reduced) { a.goToAndStop(segment ? segment[1] : 0, true); return; }
-    if (!play) { a.pause(); return; }
+    if (reduced || !play) { a.goToAndStop(stillFrame, true); return; }
     if (segment) a.playSegments(segment, true);
     else a.goToAndPlay(0, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, play, seg, playKey, speed, reduced]);
+  }, [data, play, seg, playKey, stillFrame, speed, reduced]);
 
   const box = `relative ${className}`;
   const flipStyle: CSSProperties = { ...style, ...(flip ? { transform: `${style?.transform ?? ''} scaleX(-1)` } : {}) };
@@ -81,8 +85,9 @@ export function LottieSprite({
             const a = ref.current;
             if (!a) return;
             a.setSpeed(speed);
-            if (reduced) a.goToAndStop(segment ? segment[1] : 0, true);
-            else if (play) segment ? a.playSegments(segment, true) : a.play();
+            if (reduced || !play) a.goToAndStop(stillFrame, true);
+            else if (segment) a.playSegments(segment, true);
+            else a.play();
           }}
           onComplete={() => onComplete?.()}
           className="h-full w-full" />

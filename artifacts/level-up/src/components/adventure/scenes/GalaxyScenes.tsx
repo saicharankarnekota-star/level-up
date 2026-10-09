@@ -12,7 +12,7 @@ function Ship({ crystals, launched, lit, onClick, i }: { crystals: number; launc
       animate={launched ? { y: -40 } : { y: [0, -4, 0] }}
       transition={launched ? { duration: 0.8, delay: i * 0.15 } : { repeat: Infinity, duration: 2.5, delay: i * 0.4 }}
       className={`flex flex-col items-center rounded-2xl p-1 transition ${lit ? 'bg-[#4CC9F0]/25 ring-2 ring-[#4CC9F0]' : ''}`}>
-      <LottieSprite name="rocket" play={!!launched} loop={false} className="h-24 w-24 sm:h-28 sm:w-28"
+      <LottieSprite name="rocket" play={!!launched} loop={false} segment={[30, 60]} className="h-24 w-24 sm:h-28 sm:w-28"
         fallback={<div className="mx-auto h-full w-10 rounded-t-full bg-white/80" />} />
       <div className="mt-1 flex gap-0.5 rounded-xl bg-black/30 px-1.5 py-1">
         {Array.from({ length: crystals }, (_, c) => <Pop key={c} i={i * crystals + c}><Crystal size={22} glow={lit} /></Pop>)}
