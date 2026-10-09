@@ -1,5 +1,5 @@
 import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { Link, Route, Switch, useLocation } from 'wouter';
+import { Link, Route, Switch, useLocation, useRoute } from 'wouter';
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Award, BookOpen,
   Check, CheckCircle2, ChevronRight, CircleHelp, Compass, Flame, Gamepad2,
@@ -19,7 +19,7 @@ import { AITutorMistakeModal } from './components/ai/AITutorMistakeModal';
 import { DailyStreakModal } from './components/streak/DailyStreakModal';
 import { LifelinesBar } from './components/lifelines/LifelinesBar';
 import {
-  allLessons, allPracticeQuestions, allMissions
+  allLessons, allPracticeQuestions, allMissions, allSyllabusChapters
 } from './data/curriculumData';
 
 const initialData: AppData = {
@@ -79,6 +79,51 @@ const pages = [
   { href: '/create', label: 'Create', icon: PenLine },
   { href: '/achievements', label: 'Achievements', icon: Trophy },
 ];
+
+const parseGradeNumber = (grade: string): number | null => {
+  const normalized = grade.trim().replace(/\s+/g, ' ');
+  const match = normalized.match(/Grade\s*(K|[0-9]+)(?:\s*[-–]\s*(K|[0-9]+))?/i);
+
+  if (!match) return null;
+
+  const startValue = match[1].toLowerCase() === 'k' ? 0 : Number(match[1]);
+  const endValue = match[2]
+    ? match[2].toLowerCase() === 'k'
+      ? 0
+      : Number(match[2])
+    : startValue;
+
+  return Math.min(startValue, endValue);
+};
+
+const gradeMatchesSelection = (selectedGrade: string, gradeLabels?: string | string[]) => {
+  if (!selectedGrade || !gradeLabels) return true;
+
+  const targetGrade = parseGradeNumber(selectedGrade);
+  if (targetGrade === null) return true;
+
+  const values = Array.isArray(gradeLabels) ? gradeLabels : [gradeLabels];
+
+  return values.some((label) => {
+    const normalized = label.replace(/–/g, '-').replace(/\s+/g, ' ').trim();
+    const matches = [...normalized.matchAll(/(?:Grade\s*)?(K|[0-9]+)(?:\s*-\s*(K|[0-9]+))?/gi)];
+
+    if (!matches.length) return true;
+
+    return matches.some((match) => {
+      const start = match[1].toLowerCase() === 'k' ? 0 : Number(match[1]);
+      const end = match[2]
+        ? match[2].toLowerCase() === 'k'
+          ? 0
+          : Number(match[2])
+        : start;
+
+      const min = Math.min(start, end);
+      const max = Math.max(start, end);
+      return targetGrade >= min && targetGrade <= max;
+    });
+  });
+};
 
 function readSaved(): AppData {
   try {
@@ -406,16 +451,14 @@ function App() {
               />
             </Route>
 
-            <Route path="/missions/mission-fraction-galaxy">
-              <MissionPlayer
-                mission={allMissions[0]}
+            <Route path="/missions/:missionId">
+              <MissionRoute
                 data={data}
                 onUseLifeline={useLifeline}
-                onComplete={() => {
-                  completeMission('mission-fraction-galaxy', 'Fraction Explorer', 120);
-                  setToast('Mission complete. +120 XP and Fraction Explorer badge!');
+                onComplete={(missionId, badgeName, xpGain) => {
+                  completeMission(missionId, badgeName, xpGain);
+                  setToast(`Mission complete. +${xpGain} XP and ${badgeName} badge!`);
                 }}
-                go={navigate}
                 onOpenAiExplainer={(q, studentAns, correctAns, why, misc, realLife, subj) => {
                   setAiModalState({
                     isOpen: true,
@@ -428,31 +471,7 @@ function App() {
                     subject: subj,
                   });
                 }}
-              />
-            </Route>
-
-            <Route path="/missions/mission-matter-lab">
-              <MissionPlayer
-                mission={allMissions[1]}
-                data={data}
-                onUseLifeline={useLifeline}
-                onComplete={() => {
-                  completeMission('mission-matter-lab', 'Matter Alchemist', 140);
-                  setToast('Science Mission complete! +140 XP and Matter Alchemist badge!');
-                }}
                 go={navigate}
-                onOpenAiExplainer={(q, studentAns, correctAns, why, misc, realLife, subj) => {
-                  setAiModalState({
-                    isOpen: true,
-                    questionText: q,
-                    studentAnswer: studentAns,
-                    correctAnswer: correctAns,
-                    explanation: why,
-                    misconception: misc,
-                    realLifeExample: realLife,
-                    subject: subj,
-                  });
-                }}
               />
             </Route>
 
@@ -984,15 +1003,22 @@ function Learn({
       allLessons.filter(
         (l) =>
           (filter === 'All' || l.subject === filter) &&
+          gradeMatchesSelection(data.profile.grade, l.grades) &&
           (!search ||
             `${l.title} ${l.description} ${l.tags.join(' ')} ${l.topic}`
               .toLowerCase()
               .includes(search.toLowerCase()))
       ),
-    [filter, search]
+    [filter, search, data.profile.grade]
   );
 
   const lesson = allLessons.find((l) => l.id === selectedId);
+
+  const gradeSyllabus = useMemo(
+    () =>
+      allSyllabusChapters.filter((chapter) => chapter.grade === data.profile.grade),
+    [data.profile.grade]
+  );
 
   return (
     <div className="page-enter">
@@ -1031,6 +1057,54 @@ function Learn({
               </button>
             ))}
           </div>
+
+          {gradeSyllabus.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div className="eyebrow" style={{ marginBottom: '0.75rem' }}>
+                {data.profile.grade} SYLLABUS
+              </div>
+              <div className="lesson-grid">
+                {gradeSyllabus.map((chapter) => (
+                  <div
+                    key={chapter.id}
+                    className="lesson-card"
+                    style={{ cursor: 'default', opacity: 1 }}
+                  >
+                    <div className="lesson-art">
+                      <span>{chapter.subject === 'Math' ? '📐' : '🔬'}</span>
+                      <small>{chapter.subject} · Unit {chapter.chapterNumber}</small>
+                    </div>
+                    <div className="lesson-body">
+                      <div className="lesson-meta">
+                        <span>{chapter.grade}</span>
+                        <span>{chapter.subject}</span>
+                      </div>
+                      <h3>{chapter.chapterTitle}</h3>
+                      <p>{chapter.description}</p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.75rem' }}>
+                        {chapter.topics.slice(0, 3).map((topic) => (
+                          <span
+                            key={topic}
+                            style={{
+                              display: 'inline-block',
+                              padding: '0.35rem 0.55rem',
+                              borderRadius: '999px',
+                              background: '#EEF4FF',
+                              color: '#1F2B4D',
+                              fontSize: '0.68rem',
+                              fontWeight: 700,
+                            }}
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {filtered.length ? (
             <div className="lesson-grid">
@@ -1266,6 +1340,53 @@ function Learn({
 // --------------------------------------------------------------------------
 // MISSIONS VIEW (Math & Science Missions)
 // --------------------------------------------------------------------------
+function MissionRoute({
+  data,
+  onUseLifeline,
+  onComplete,
+  onOpenAiExplainer,
+  go,
+}: {
+  data: AppData;
+  onUseLifeline: (type: keyof LifelineInventory) => void;
+  onComplete: (missionId: string, badgeName: string, xpGain: number) => void;
+  onOpenAiExplainer: (
+    q: string,
+    studentAns: string,
+    correctAns: string,
+    why: string,
+    misc: any,
+    realLife: any,
+    subj: string
+  ) => void;
+  go: (p: string) => void;
+}) {
+  const [, params] = useRoute('/missions/:missionId');
+  const missionId = params?.missionId;
+  const mission = allMissions.find((m) => m.id === missionId) || allMissions[0];
+  const missionReward = {
+    'mission-fraction-galaxy': { badge: 'Fraction Explorer', xp: 120 },
+    'mission-matter-lab': { badge: 'Matter Alchemist', xp: 140 },
+    'mission-bridge-builder': { badge: 'Bridge Builder', xp: 150 },
+    'mission-pollinator-quest': { badge: 'Pollinator Protector', xp: 160 },
+    'mission-plant-power': { badge: 'Plant Power', xp: 170 },
+    'mission-planet-balance': { badge: 'Planet Balancer', xp: 180 },
+  }[mission.id] || { badge: mission.badgeReward, xp: mission.xpReward };
+
+  return (
+    <MissionPlayer
+      mission={mission}
+      data={data}
+      onUseLifeline={onUseLifeline}
+      onComplete={() => {
+        onComplete(mission.id, missionReward.badge, missionReward.xp);
+      }}
+      go={go}
+      onOpenAiExplainer={onOpenAiExplainer}
+    />
+  );
+}
+
 function Missions({
   data,
   onStartMission,
@@ -1282,7 +1403,9 @@ function Missions({
       />
 
       <div className="space-y-6">
-        {allMissions.map((m) => {
+        {allMissions
+          .filter((m) => gradeMatchesSelection(data.profile.grade, m.grades))
+          .map((m) => {
           const isDone = data.completedMissions.includes(m.id);
           return (
             <section key={m.id} className="mission-list-card">
@@ -1316,6 +1439,7 @@ function Missions({
 
                 <div className="mission-tags">
                   <span className="bg-[#EAE8E0] text-[#27314D] font-bold">{m.subject}</span>
+                  <span>{m.grades.join(' · ')}</span>
                   <span>{m.challenges.length} challenges</span>
                   <span>{m.estimatedTime}</span>
                   <span className="text-[#3B7E62] font-semibold">+{m.xpReward} XP</span>
@@ -1883,7 +2007,7 @@ function Practice({
   ) => void;
 }) {
   const [, navigate] = useLocation();
-  const [subjectFilter, setSubjectFilter] = useState<'All' | 'Math' | 'Science'>('All');
+  const [subjectFilter, setSubjectFilter] = useState<'All' | 'Math' | 'Science' | 'Nature' | 'Engineering'>('All');
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [checked, setChecked] = useState(false);
@@ -1897,30 +2021,36 @@ function Practice({
   const [shieldActive, setShieldActive] = useState(false);
 
   const filteredQuestions = useMemo(() => {
-    if (subjectFilter === 'All') return allPracticeQuestions;
-    return allPracticeQuestions.filter((q) => q.subject === subjectFilter);
-  }, [subjectFilter]);
+    const bySubject = subjectFilter === 'All'
+      ? allPracticeQuestions
+      : allPracticeQuestions.filter((q) => q.subject === subjectFilter);
 
-  const q = filteredQuestions[Math.min(index, filteredQuestions.length - 1)] || filteredQuestions[0];
+    return bySubject.filter((q) => gradeMatchesSelection(data.profile.grade, q.gradeLevel || q.grade));
+  }, [subjectFilter, data.profile.grade]);
+
+  const q = filteredQuestions[Math.min(index, filteredQuestions.length - 1)] ?? null;
 
   const handleFiftyFifty = () => {
-    if (eliminated.length > 0) return;
+    if (!q || eliminated.length > 0) return;
     const wrong = q.choices.filter((c) => c !== q.answer);
     setEliminated(wrong.slice(0, 2));
     onUseLifeline('fiftyFifty');
   };
 
   const handleAiClue = () => {
+    if (!q) return;
     setAiClueActive(true);
     onUseLifeline('aiClue');
   };
 
   const handleRealLife = () => {
+    if (!q) return;
     setRealLifeActive(true);
     onUseLifeline('realLife');
   };
 
   const handleShield = () => {
+    if (!q) return;
     setShieldActive(true);
     onUseLifeline('secondChance');
   };
@@ -1935,6 +2065,7 @@ function Practice({
   };
 
   const next = () => {
+    if (!q) return;
     const isCorrect = answer === q.answer;
     const total = right + (isCorrect ? 1 : 0);
 
@@ -1948,6 +2079,30 @@ function Practice({
       resetQuestionState();
     }
   };
+
+  if (!filteredQuestions.length) {
+    return (
+      <div className="page-enter">
+        <div className="empty-card" style={{ maxWidth: 540, margin: '2rem auto' }}>
+          <Search size={25} />
+          <h3>No practice questions for this grade yet.</h3>
+          <p>
+            {data.profile.grade} does not have questions in the current subject filter. Try a different subject or reset the filter.
+          </p>
+          <button
+            className="button button-dark"
+            onClick={() => {
+              setSubjectFilter('All');
+              setIndex(0);
+              resetQuestionState();
+            }}
+          >
+            Show all practice topics
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (finished) {
     return (
@@ -1991,7 +2146,7 @@ function Practice({
       {/* Subject Filter Switcher */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="filter-row mb-0">
-          {(['All', 'Math', 'Science'] as const).map((s) => (
+          {(['All', 'Math', 'Science', 'Nature', 'Engineering'] as const).map((s) => (
             <button
               key={s}
               className={`filter-chip ${subjectFilter === s ? 'selected' : ''}`}
@@ -2001,13 +2156,13 @@ function Practice({
                 resetQuestionState();
               }}
             >
-              {s === 'All' ? '🌟 All Subjects' : s === 'Math' ? '📐 Mathematics' : '🔬 Science'}
+              {s === 'All' ? '🌟 All Subjects' : s === 'Math' ? '📐 Mathematics' : s === 'Science' ? '🔬 Science' : s === 'Nature' ? '🌿 Nature' : '🛠️ Engineering'}
             </button>
           ))}
         </div>
 
         <span className="text-xs text-[#7F8694] font-semibold">
-          Question {index + 1} of {filteredQuestions.length}
+          Question {Math.min(index + 1, filteredQuestions.length)} of {filteredQuestions.length}
         </span>
       </div>
 

@@ -99,11 +99,23 @@ export interface QuestionMisconception {
   keyRule: string;
 }
 
+export interface SyllabusChapter {
+  id: string;
+  grade: string;
+  subject: 'Math' | 'Science';
+  chapterNumber: number;
+  chapterTitle: string;
+  description: string;
+  topics: string[];
+}
+
 export interface PracticeQuestion {
   id: string;
   subject: 'Math' | 'Science' | 'Nature' | 'Engineering';
   topic: string;
-  gradeLevel: string;
+  grade: string; // e.g. 'Grade 1', 'Grade 5', 'Grade 10'
+  gradeLevel: string; // e.g. 'Grade 5'
+  chapter?: string;
   q: string;
   choices: string[];
   answer: string;
@@ -122,6 +134,8 @@ export interface SubjectLesson {
   title: string;
   topic: string;
   subject: 'Math' | 'Science' | 'Nature' | 'Engineering';
+  grades: string[]; // e.g. ['Grade 4', 'Grade 5', 'Grade 6']
+  chapter?: string;
   age: string;
   length: string;
   description: string;
@@ -155,6 +169,7 @@ export interface MissionData {
   id: string;
   title: string;
   subject: 'Math' | 'Science';
+  grades: string[];
   theme: string;
   description: string;
   tags: string[];

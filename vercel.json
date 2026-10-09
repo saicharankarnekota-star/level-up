@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "corepack enable && pnpm install",
+  "buildCommand": "pnpm --dir artifacts/level-up build",
+  "outputDirectory": "artifacts/level-up/dist/public",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
