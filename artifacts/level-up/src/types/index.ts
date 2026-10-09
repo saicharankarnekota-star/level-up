@@ -51,7 +51,7 @@ export interface AvatarConfig {
 
 // ---------- Learning content ----------
 
-export type Grade = 1 | 2;
+export type Grade = 1 | 2 | 8;
 export type Subject = 'Math' | 'Science';
 
 export type VisualizerKey =
@@ -72,7 +72,8 @@ export type VisualizerKey =
   | 'senses'
   | 'weather'
   | 'dayNight'
-  | 'lifeCycle';
+  | 'lifeCycle'
+  | 'phetSim';
 
 export type VisualizerParams = Record<string, unknown>;
 

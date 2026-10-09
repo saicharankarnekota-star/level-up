@@ -229,7 +229,7 @@ function MemoryMatch({ grade, onFinish }: GameProps) {
 // ---------------- Sort It ----------------
 
 function SortIt({ grade, onFinish }: GameProps) {
-  const options = Object.values(sortSets).filter((s) => s.grade === grade || grade === 2);
+  const options = Object.values(sortSets).filter((s) => s.grade === grade || grade >= 2);
   const [setId, setSetId] = useState<string | null>(options.length === 1 ? options[0].id : null);
   const set = setId ? sortSets[setId] : null;
   const items = useMemo(() => (set ? shuffle(set.items).slice(0, 10) : []), [set]);

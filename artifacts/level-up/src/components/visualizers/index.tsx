@@ -5,6 +5,7 @@ import {
   ArrayBuilder, BaseTen, Clock, Coins, Compare, FractionPizza, Measure, NumberLine, PatternMaker, Pictograph, ShapeExplorer, TenFrame,
 } from './mathVisualizers';
 import { DayNight, LifeCycle, PlantParts, Senses, SortBins, Weather } from './scienceVisualizers';
+import { PhetSim } from './phetSim';
 
 const registry: Record<VisualizerKey, ComponentType<VisualizerProps>> = {
   tenFrame: TenFrame,
@@ -25,6 +26,7 @@ const registry: Record<VisualizerKey, ComponentType<VisualizerProps>> = {
   weather: Weather,
   dayNight: DayNight,
   lifeCycle: LifeCycle,
+  phetSim: PhetSim,
 };
 
 /** Renders a visualizer; changing params remounts it with the new starting state. */

@@ -33,7 +33,7 @@ export function Home() {
         <div>
           <div className="eyebrow">{greeting.toUpperCase()}</div>
           <h1>Hey {profile.name} <span className="wave-mark">👋</span></h1>
-          <p>Ready to see, learn and play with Grade {profile.grade} Math & Science?</p>
+          <p>Ready to see, learn and play with Grade {profile.grade} {[...new Set(gradeTopics.map((t) => t.subject))].join(' & ')}?</p>
         </div>
         <AvatarRenderer config={profile.avatarConfig} size={78} animate />
       </div>
@@ -42,7 +42,7 @@ export function Home() {
         <Link href={`/learn/${nextUp.id}`} className="group relative flex min-h-[240px] overflow-hidden rounded-3xl bg-[#27314D] p-7 text-white">
           <div className="relative z-10 max-w-[60%]">
             <div className="text-[10px] font-bold uppercase tracking-[1.5px] text-[#BDC5D3]">{inProgress ? 'Pick up where you left off' : 'Your next adventure'}</div>
-            <h2 className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold leading-tight">{nextUp.title}</h2>
+            <h2 className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold leading-tight text-white">{nextUp.title}</h2>
             <p className="mt-2 text-sm text-[#C4CAD3]">{nextUp.blurb}</p>
             <span className="button button-yellow mt-5">{nextStep} <ArrowRight size={16} /></span>
           </div>

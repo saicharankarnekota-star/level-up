@@ -11,6 +11,7 @@ import { AvatarRenderer } from '../components/avatar/AvatarRenderer';
 import { StreakModal } from '../components/streak/StreakModal';
 import { NarrationToggle } from '../components/NarrationTranscript';
 import type { Grade } from '../types';
+import { GRADES } from '../data/grades';
 
 export const navItems = [
   { href: '/', label: 'Home', icon: Home },
@@ -98,10 +99,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
               {gradeOpen && (
                 <div className="absolute right-0 top-full z-50 mt-1.5 w-44 space-y-1 rounded-2xl border border-[#E8E2D5] bg-white p-2 shadow-xl">
-                  {([1, 2] as Grade[]).map((g) => (
+                  {GRADES.map(({ grade: g, ages }) => (
                     <button key={g} type="button" onClick={() => setGrade(g)}
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold ${profile.grade === g ? 'bg-[#27314D] text-white' : 'text-[#3E475A] hover:bg-[#F5F2EB]'}`}>
-                      <span>Grade {g}<span className="block text-[10px] font-normal opacity-70">Ages {g === 1 ? '6–7' : '7–8'}</span></span>
+                      <span>Grade {g}<span className="block text-[10px] font-normal opacity-70">Ages {ages}</span></span>
                       {profile.grade === g && <Check size={14} />}
                     </button>
                   ))}

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AvatarConfig, Grade, Lifelines, Note, ProfileData, SavedState } from '../types';
+import { isGrade } from '../data/grades';
 import { defaultAvatarConfig } from '../components/avatar/AvatarRenderer';
 import { localDate } from '../lib/date';
 import { uid } from '../lib/random';
@@ -49,8 +50,8 @@ function load(): SavedState {
     if (parsed.version !== 2 || !parsed.profiles) return emptyState();
     const profiles: SavedState['profiles'] = {};
     for (const [id, p] of Object.entries(parsed.profiles)) {
-      const base = blankProfile(p.name ?? 'Learner', p.grade === 2 ? 2 : 1, p.avatarConfig ?? defaultAvatarConfig);
-      profiles[id] = { ...base, ...p, id, stats: { ...base.stats, ...p.stats }, lifelines: { ...base.lifelines, ...p.lifelines } };
+      const base = blankProfile(p.name ?? 'Learner', isGrade(p.grade) ? p.grade : 1, p.avatarConfig ?? defaultAvatarConfig);
+      profiles[id] = { ...base, ...p, id, grade: base.grade, stats: { ...base.stats, ...p.stats }, lifelines: { ...base.lifelines, ...p.lifelines } };
     }
     const activeId = parsed.activeId && profiles[parsed.activeId] ? parsed.activeId : null;
     return { version: 2, activeId, profiles };

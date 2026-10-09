@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Palette, RotateCcw, Trash2, Users } from 'lucide-react';
-import type { Grade } from '../types';
+import { GRADES } from '../data/grades';
 import { useProfile } from '../store/progress';
 import { levelInfo } from '../store/rewards';
 import { badgeRules } from '../store/badges';
@@ -45,8 +45,8 @@ export function Profile() {
               <button type="submit" className="button button-dark" disabled={!name.trim() || name.trim() === profile.name}>Save</button>
             </div>
             <div className="field-label">Grade</div>
-            <div className="grid grid-cols-2 gap-2">
-              {([1, 2] as Grade[]).map((g) => (
+            <div className="grid grid-cols-3 gap-2">
+              {GRADES.map(({ grade: g }) => (
                 <button key={g} type="button" onClick={() => g !== profile.grade && updateProfile({ grade: g })}
                   className={`rounded-xl border-2 px-3 py-2.5 text-sm font-bold ${profile.grade === g ? 'border-[#27314D] bg-[#FFF3C4]' : 'border-[#E6E1D6] bg-white'}`}>Grade {g}</button>
               ))}

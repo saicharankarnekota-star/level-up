@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import type { Grade, Subject, Topic } from '../types';
+import { GRADES } from '../data/grades';
 import { topics } from '../data/topics';
 import { useProfile } from '../store/progress';
 import { PageTitle } from '../layout/AppShell';
@@ -37,7 +38,7 @@ export function Learn() {
         )} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
-        {!q && ([1, 2] as Grade[]).map((g) => <Chip key={g} active={grade === g} onClick={() => setGrade(g)}>Grade {g}</Chip>)}
+        {!q && GRADES.map(({ grade: g }) => <Chip key={g} active={grade === g} onClick={() => setGrade(g)}>Grade {g}</Chip>)}
         <span className="mx-1 h-5 w-px bg-[#E0DBCF]" />
         {(['All', 'Math', 'Science'] as const).map((s) => <Chip key={s} active={subject === s} onClick={() => setSubject(s)}>{s === 'Math' ? '🔢 ' : s === 'Science' ? '🔬 ' : ''}{s}</Chip>)}
         {!q && <span className="ml-auto text-xs font-bold text-[#6B7385]">{starred}/{gradeTotal} topics starred in Grade {grade}</span>}
@@ -45,8 +46,8 @@ export function Learn() {
 
       {visible.length === 0 && (
         <div className="empty-shelf">
-          <b>No topics match “{query}”</b>
-          <p>Try another word, or clear the search.</p>
+          <b>{q ? `No topics match “${query}”` : `No Grade ${grade} ${subject} topics yet`}</b>
+          <p>{q ? 'Try another word, or clear the search.' : 'Try another subject.'}</p>
           <button type="button" className="button button-dark mt-3" onClick={() => { setQuery(''); setSubject('All'); }}>Show all topics</button>
         </div>
       )}

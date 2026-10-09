@@ -8,7 +8,7 @@ export function Games() {
   const { profile } = useProfile();
   return (
     <div className="page-enter">
-      <PageTitle eyebrow="GAMES" title="Play with what you learned" description={`Games use Grade ${profile.grade} questions. Beat your best score!`} />
+      <PageTitle eyebrow="GAMES" title="Play with what you learned" description={profile.grade === 8 ? 'Quick warm-up games for sharp minds. Beat your best score!' : `Games use Grade ${profile.grade} questions. Beat your best score!`} />
       <div className="grid gap-4 sm:grid-cols-2">
         {games.map((g) => (
           <Link key={g.id} href={`/games/${g.id}`} className="group overflow-hidden rounded-3xl border border-[#E6E1D6] bg-[#FFFDF8] transition hover:-translate-y-1 hover:shadow-lg">

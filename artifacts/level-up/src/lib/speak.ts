@@ -42,6 +42,9 @@ const clean = (text: string) =>
   text
     .replace(/\p{Extended_Pictographic}\uFE0F?/gu, (e) => (spokenEmoji[e.replace('\uFE0F', '')] ? ` ${spokenEmoji[e.replace('\uFE0F', '')]} ` : ' '))
     .replace(/₹\s?(\d+)/g, '$1 rupees')
+    .replace(/m\/s²/g, ' metres per second squared')
+    .replace(/(\d)\s?N\b/g, '$1 newtons')
+    .replace(/(\d)\s?kg\b/g, '$1 kilograms')
     .replace(/(\d)\s*[−-]\s*(\d)/g, '$1 minus $2')
     .replace(/\s[−-]\s/g, ' minus ')
     .replace(/\+/g, ' plus ')

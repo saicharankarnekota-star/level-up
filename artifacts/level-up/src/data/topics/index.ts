@@ -1,8 +1,9 @@
 import type { Grade, Question, Subject, Topic } from '../../types';
 import { mathTopics } from './math';
 import { scienceTopics } from './science';
+import { grade8Topics } from './grade8';
 
-export const topics: Topic[] = [...mathTopics, ...scienceTopics];
+export const topics: Topic[] = [...mathTopics, ...scienceTopics, ...grade8Topics];
 
 export const topicById = (id: string | undefined) => topics.find((t) => t.id === id);
 

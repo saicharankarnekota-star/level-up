@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, Plus } from 'lucide-react';
 import type { AvatarCharacter, AvatarColorTheme, Grade } from '../types';
+import { GRADES } from '../data/grades';
 import { useProgress } from '../store/progress';
 import { levelInfo } from '../store/rewards';
 import { AvatarRenderer, defaultAvatarConfig } from '../components/avatar/AvatarRenderer';
@@ -62,13 +63,13 @@ export function Onboarding() {
             <input id="name" className="form-input h-12 text-base" maxLength={20} placeholder="Type your name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
 
             <div className="field-label text-sm">Which grade are you in?</div>
-            <div className="grid grid-cols-2 gap-3">
-              {([1, 2] as Grade[]).map((g) => (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {GRADES.map(({ grade: g, emoji, blurb }) => (
                 <button key={g} type="button" onClick={() => setGrade(g)}
                   className={`rounded-2xl border-2 p-4 text-left transition ${grade === g ? 'border-[#27314D] bg-[#FFF3C4]' : 'border-[#E6E1D6] hover:border-[#27314D]'}`}>
-                  <div className="text-3xl">{g === 1 ? '🐣' : '🦉'}</div>
+                  <div className="text-3xl">{emoji}</div>
                   <b className="font-['Space_Grotesk'] text-lg">Grade {g}</b>
-                  <small className="block text-[#6B7385]">{g === 1 ? 'Counting, shapes, plants, senses' : 'Tens & ones, time, money, life cycles'}</small>
+                  <small className="block text-[#6B7385]">{blurb}</small>
                 </button>
               ))}
             </div>

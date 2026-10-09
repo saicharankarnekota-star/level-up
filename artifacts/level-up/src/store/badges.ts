@@ -42,6 +42,7 @@ export const badgeRules: BadgeRule[] = [
   { id: 'g1-science', name: 'Little Scientist', emoji: '🔬', description: 'Earn stars in every Grade 1 Science topic.', progress: setDone(1, 'Science') },
   { id: 'g2-math', name: 'Math Wizard', emoji: '🧮', description: 'Earn stars in every Grade 2 Math topic.', progress: setDone(2, 'Math') },
   { id: 'g2-science', name: 'Nature Detective', emoji: '🦋', description: 'Earn stars in every Grade 2 Science topic.', progress: setDone(2, 'Science') },
+  { id: 'g8-science', name: 'Force Master', emoji: '🪢', description: 'Earn stars in every Grade 8 Science topic.', progress: setDone(8, 'Science') },
   {
     id: 'streak-3', name: 'Warm Spark', emoji: '🔥',
     description: 'Learn 3 days in a row.',

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowLeft, Lightbulb, RotateCcw, Scissors, Shield, Shuffle } from 'lucide-react';
 import type { Grade, Question, Topic } from '../types';
+import { GRADES } from '../data/grades';
 import { generateSet, topics } from '../data/topics';
 import { useProfile } from '../store/progress';
 import { PageTitle } from '../layout/AppShell';
@@ -58,7 +59,7 @@ export function Practice() {
       <PageTitle eyebrow="PRACTICE" title="Sharpen your skills" description="Fresh questions every time. Wrong answers are welcome — Nova will help you fix them." />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        {([1, 2] as Grade[]).map((g) => <Chip key={g} active={grade === g} onClick={() => setGrade(g)}>Grade {g}</Chip>)}
+        {GRADES.map(({ grade: g }) => <Chip key={g} active={grade === g} onClick={() => setGrade(g)}>Grade {g}</Chip>)}
         <span className="ml-auto inline-flex flex-wrap items-center gap-3 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3E475A] border border-[#E6E1D6]">
           Today's lifelines: <span className="inline-flex items-center gap-1"><Scissors size={13} /> {L.fiftyFifty}</span>
           <span className="inline-flex items-center gap-1"><Lightbulb size={13} /> {L.hint}</span>
