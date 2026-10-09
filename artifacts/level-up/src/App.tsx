@@ -2,8 +2,8 @@ import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 're
 import { Link, Route, Switch, useLocation, useRoute } from 'wouter';
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Award, BookOpen,
-  Check, CheckCircle2, ChevronRight, CircleHelp, Compass, Flame, Gamepad2,
-  Lightbulb, LockKeyhole, Menu, PenLine, Play, Plus, Search,
+  Check, CheckCircle2, ChevronRight, ChevronDown, CircleHelp, Compass, Flame, Gamepad2,
+  GraduationCap, Lightbulb, LockKeyhole, Menu, PenLine, Play, Plus, Search,
   ShieldCheck, Sparkles, Star, Target, Trophy, X, Zap, Bot,
   Palette, User, RefreshCw, Shield
 } from 'lucide-react';
@@ -21,6 +21,11 @@ import { LifelinesBar } from './components/lifelines/LifelinesBar';
 import {
   allLessons, allPracticeQuestions, allMissions, allSyllabusChapters
 } from './data/curriculumData';
+import {
+  fullGradeQuestions, gradesList, syllabusChapters
+} from './data/fullGradeSyllabus';
+import { MathAdventurePlayer } from './components/math-adventure/MathAdventurePlayer';
+import { mathAdventureLevels } from './data/mathAdventureModules';
 
 const initialData: AppData = {
   profile: {
@@ -49,6 +54,7 @@ const initialData: AppData = {
   },
   mission: { completed: false, currentStep: 0, activeMissionId: 'mission-fraction-galaxy' },
   completedMissions: [],
+  unlockedAdventureLevels: [1],
   creations: [
     {
       id: 'seed-1',
@@ -72,6 +78,7 @@ const initialData: AppData = {
 
 const pages = [
   { href: '/', label: 'Home', icon: Compass },
+  { href: '/adventure', label: 'Math Adventure', icon: Sparkles },
   { href: '/learn', label: 'Learn', icon: BookOpen },
   { href: '/missions', label: 'Missions', icon: Target },
   { href: '/games', label: 'Games', icon: Gamepad2 },
@@ -156,6 +163,7 @@ function readSaved(): AppData {
           ...(restored.lifelines || {}),
         },
         completedMissions: restored.completedMissions || (restored.mission?.completed ? ['mission-fraction-galaxy'] : []),
+        unlockedAdventureLevels: restored.unlockedAdventureLevels || [1],
       };
     }
   } catch { /* Keep the friendly demo state if storage is unavailable. */ }
@@ -172,6 +180,7 @@ function App() {
   // Modals state
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [streakModalOpen, setStreakModalOpen] = useState(false);
+  const [gradeMenuOpen, setGradeMenuOpen] = useState(false);
   const [aiModalState, setAiModalState] = useState<{
     isOpen: boolean;
     questionText: string;
@@ -278,6 +287,39 @@ function App() {
     });
   };
 
+  const handleCompleteAdventureLevel = (levelNumber: number, xpReward: number, badgeName: string) => {
+    patch((d) => {
+      const currentUnlocked = d.unlockedAdventureLevels || [1];
+      const nextLevel = levelNumber + 1;
+      const newUnlocked = nextLevel <= 5 && !currentUnlocked.includes(nextLevel)
+        ? [...currentUnlocked, nextLevel]
+        : currentUnlocked;
+      const badges = d.badges.includes(badgeName) ? d.badges : [...d.badges, badgeName];
+      const xp = d.profile.xp + xpReward;
+      const level = Math.floor(xp / 100) + 1;
+
+      return {
+        ...d,
+        unlockedAdventureLevels: newUnlocked,
+        badges,
+        profile: { ...d.profile, xp, level },
+        activity: {
+          ...d.activity,
+          lessonsCompleted: d.activity.lessonsCompleted + 1,
+        },
+      };
+    });
+    setToast(`🎉 Level ${levelNumber} Passed! +${xpReward} XP awarded!`);
+  };
+
+  const handleSelectGrade = (newGrade: string) => {
+    patch((d) => ({
+      ...d,
+      profile: { ...d.profile, grade: newGrade },
+    }));
+    setToast(`Syllabus changed to ${newGrade}! Questions and chapters updated.`);
+  };
+
   return (
     <div className="app-shell">
       {/* Sidebar */}
@@ -368,6 +410,53 @@ function App() {
           </div>
 
           <div className="top-actions">
+            {/* Grade Syllabus Selector Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setGradeMenuOpen(!gradeMenuOpen)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#E0DBCF] text-xs font-bold text-[#27314D] hover:border-[#27314D] transition shadow-2xs"
+                title="Click to switch grade syllabus"
+              >
+                <GraduationCap size={15} className="text-[#3B4E7A]" />
+                <span>{data.profile.grade}</span>
+                <ChevronDown size={13} className="text-[#8890A2]" />
+              </button>
+
+              {gradeMenuOpen && (
+                <div className="absolute top-full mt-1.5 right-0 z-50 w-64 bg-white rounded-2xl shadow-xl border border-[#E8E2D5] p-2 space-y-1 animate-fade-in max-h-80 overflow-y-auto">
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#8A92A2] px-2 py-1 flex items-center justify-between">
+                    <span>Class Syllabus</span>
+                    <span className="text-[9px] font-normal text-[#B0B7C5]">Grades 1–10</span>
+                  </div>
+                  {gradesList.map((g) => (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => {
+                        handleSelectGrade(g.id);
+                        setGradeMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-left transition ${
+                        data.profile.grade === g.id
+                          ? 'bg-[#27314D] text-white'
+                          : 'text-[#3E475A] hover:bg-[#F5F2EB]'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span>{g.id}</span>
+                          <span className="text-[10px] opacity-80">{g.badge}</span>
+                        </div>
+                        <span className="block text-[10px] font-normal opacity-70">{g.ageRange}</span>
+                      </div>
+                      {data.profile.grade === g.id && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* XP Pill */}
             <div className="xp-pill">
               <Zap size={14} fill="currentColor" />
@@ -442,6 +531,33 @@ function App() {
                   });
                 }}
               />
+            </Route>
+
+            <Route path="/adventure">
+              <div className="page-enter">
+                <MathAdventurePlayer
+                  initialLevelNumber={1}
+                  unlockedLevels={data.unlockedAdventureLevels || [1]}
+                  onCompleteLevel={handleCompleteAdventureLevel}
+                  onBack={() => navigate('/learn')}
+                />
+              </div>
+            </Route>
+
+            <Route path="/adventure/:levelNumber">
+              {(params) => {
+                const lvl = parseInt(params.levelNumber || '1', 10);
+                return (
+                  <div className="page-enter">
+                    <MathAdventurePlayer
+                      initialLevelNumber={isNaN(lvl) ? 1 : lvl}
+                      unlockedLevels={data.unlockedAdventureLevels || [1]}
+                      onCompleteLevel={handleCompleteAdventureLevel}
+                      onBack={() => navigate('/learn')}
+                    />
+                  </div>
+                );
+              }}
             </Route>
 
             <Route path="/missions">
@@ -519,6 +635,7 @@ function App() {
             <Route path="/practice">
               <Practice
                 data={data}
+                onSelectGrade={handleSelectGrade}
                 onUseLifeline={useLifeline}
                 onDone={(n) => {
                   patch((d) => ({
@@ -822,6 +939,23 @@ function Dashboard({
 
       <div className="adventure-row">
         <button
+          className="adventure-card adventure-mission bg-gradient-to-br from-[#FFF5F0] to-[#FFEBE0] border-[#F4CDBE]"
+          onClick={() => navigate('/adventure')}
+        >
+          <span className="adventure-icon bg-[#E0662A] text-white">
+            <Sparkles size={20} />
+          </span>
+          <span className="adventure-copy">
+            <b className="text-[#842A0C]">Math Adventure 🍎🐻🚀</b>
+            <small className="text-[#A34B29]">Levels 1–5: Mia to Maths Dragon</small>
+          </span>
+          <span className="adventure-count font-bold text-[#D05417]">
+            {(data.unlockedAdventureLevels || [1]).length}/5 open
+          </span>
+          <ArrowUpRight size={17} className="text-[#D05417]" />
+        </button>
+
+        <button
           className="adventure-card adventure-mission"
           onClick={() => navigate('/missions')}
         >
@@ -992,32 +1126,40 @@ function Learn({
     subj: string
   ) => void;
 }) {
+  const [, navigate] = useLocation();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState('All');
   const [activeTab, setActiveTab] = useState<'concept' | 'reallife'>('concept');
+  const [selectedSyllabusGrade, setSelectedSyllabusGrade] = useState<string>(data.profile.grade || 'Grade 5');
   const [checkAnswer, setCheckAnswer] = useState<string | null>(null);
   const [checkFeedback, setCheckFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (data.profile.grade) {
+      setSelectedSyllabusGrade(data.profile.grade);
+    }
+  }, [data.profile.grade]);
 
   const filtered = useMemo(
     () =>
       allLessons.filter(
         (l) =>
           (filter === 'All' || l.subject === filter) &&
-          gradeMatchesSelection(data.profile.grade, l.grades) &&
+          gradeMatchesSelection(selectedSyllabusGrade, l.grades) &&
           (!search ||
             `${l.title} ${l.description} ${l.tags.join(' ')} ${l.topic}`
               .toLowerCase()
               .includes(search.toLowerCase()))
       ),
-    [filter, search, data.profile.grade]
+    [filter, search, selectedSyllabusGrade]
   );
 
   const lesson = allLessons.find((l) => l.id === selectedId);
 
   const gradeSyllabus = useMemo(
     () =>
-      allSyllabusChapters.filter((chapter) => chapter.grade === data.profile.grade),
-    [data.profile.grade]
+      syllabusChapters.filter((chapter) => chapter.grade === selectedSyllabusGrade),
+    [selectedSyllabusGrade]
   );
 
   return (
@@ -1046,6 +1188,126 @@ function Learn({
             }
           />
 
+          {/* Level Up: Interactive Mathematics Lesson Plan (Levels 1–5) Hero Banner */}
+          <div className="mb-6 p-6 rounded-3xl bg-gradient-to-br from-[#202842] via-[#2A3557] to-[#1E263D] text-white shadow-xl relative overflow-hidden border border-[#3C4A73]">
+            <div className="relative z-10 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4CF55]/20 text-[#F4CF55] text-xs font-black uppercase tracking-wider mb-3">
+                <Sparkles size={14} />
+                <span>Featured Interactive Math Adventure · Levels 1–5</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-['Space_Grotesk'] tracking-tight mb-2">
+                Level Up: Interactive Mathematics Lesson Plan
+              </h2>
+              <p className="text-sm text-[#C8D1E6] mb-4 leading-relaxed">
+                Experience mathematics through story, hands-on manipulatives, mini-games, and skill mastery quizzes! Complete each mission with ≥70% score to unlock the next level.
+              </p>
+
+              {/* Levels progression tags */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-5">
+                {[
+                  { lvl: 1, name: 'Addition', icon: '🍎', desc: 'Mia’s Apples' },
+                  { lvl: 2, name: 'Subtraction', icon: '🐻', desc: 'Barnaby’s Honey' },
+                  { lvl: 3, name: 'Multiplication', icon: '🚀', desc: 'Energy Crystals' },
+                  { lvl: 4, name: 'Mixed Challenge', icon: '🏰', desc: 'Magic Kingdom' },
+                  { lvl: 5, name: 'Maths Dragon', icon: '🐉', desc: 'Pyroth Boss' },
+                ].map((item) => {
+                  const isUnlocked = (data.unlockedAdventureLevels || [1]).includes(item.lvl);
+                  return (
+                    <div
+                      key={item.lvl}
+                      className={`p-2.5 rounded-xl border text-center transition ${
+                        isUnlocked
+                          ? 'bg-white/10 border-white/20 text-white'
+                          : 'bg-black/20 border-white/5 text-white/40'
+                      }`}
+                    >
+                      <span className="text-lg block mb-0.5">{item.icon}</span>
+                      <b className="text-[11px] block truncate">L{item.lvl}: {item.name}</b>
+                      <small className="text-[9px] opacity-75 block">{item.desc}</small>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 4-Step Cycle pills */}
+              <div className="flex items-center gap-2 text-xs font-bold text-[#E2E8F5] mb-5 flex-wrap">
+                <span className="text-[#F4CF55]">4-Step Cycle:</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/10">1. Watch 🎬</span>
+                <span>→</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/10">2. Explore 🖐️</span>
+                <span>→</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/10">3. Play 🎮</span>
+                <span>→</span>
+                <span className="px-2 py-0.5 rounded-md bg-white/10">4. Prove (≥70%) 🏆</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate('/adventure')}
+                  className="px-5 py-2.5 rounded-xl bg-[#F4CF55] text-[#202842] text-xs font-extrabold hover:bg-[#FFDC68] transition shadow-md active:scale-95 flex items-center gap-2"
+                >
+                  <span>Start Math Adventure Journey</span>
+                  <ArrowRight size={16} />
+                </button>
+                <span className="text-xs text-[#A9B4CC]">
+                  {(data.unlockedAdventureLevels || [1]).length}/5 Levels Unlocked
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute -right-8 -bottom-8 opacity-15 pointer-events-none text-9xl">
+              🚀
+            </div>
+          </div>
+
+          {/* Grade Syllabus Selector Ribbon */}
+          <div className="mb-6 p-4 rounded-2xl bg-white border border-[#E7E2D5] shadow-xs">
+            <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7B8394] block">
+                  BROWSE GRADE CURRICULUM SYLLABUS
+                </span>
+                <h3 className="text-sm font-bold text-[#27314D] flex items-center gap-2">
+                  <span>Viewing Syllabus for <span className="text-[#3252A2] font-black underline decoration-2">{selectedSyllabusGrade}</span></span>
+                  {gradesList.find((g) => g.id === selectedSyllabusGrade) && (
+                    <span className="font-normal text-xs text-[#6F7788]">
+                      ({gradesList.find((g) => g.id === selectedSyllabusGrade)?.ageRange} · {gradesList.find((g) => g.id === selectedSyllabusGrade)?.badge})
+                    </span>
+                  )}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/practice')}
+                className="text-xs px-3 py-1.5 rounded-xl bg-[#27314D] text-white font-bold hover:bg-[#384668] transition"
+              >
+                Practice Questions →
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+              {gradesList.map((g) => {
+                const isSelected = selectedSyllabusGrade === g.id;
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => setSelectedSyllabusGrade(g.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#27314D] text-white shadow-sm ring-2 ring-[#27314D]/20 scale-102'
+                        : 'bg-[#F7F5EE] text-[#555E70] hover:bg-[#EFECE2] hover:text-[#27314D]'
+                    }`}
+                  >
+                    <span>{g.badge.split(' ')[0]}</span>
+                    <span>{g.id}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="filter-row">
             {['All', 'Math', 'Science', 'Nature', 'Engineering'].map((f) => (
               <button
@@ -1061,7 +1323,7 @@ function Learn({
           {gradeSyllabus.length > 0 && (
             <div style={{ marginBottom: '1.5rem' }}>
               <div className="eyebrow" style={{ marginBottom: '0.75rem' }}>
-                {data.profile.grade} SYLLABUS
+                {selectedSyllabusGrade} SYLLABUS UNITS
               </div>
               <div className="lesson-grid">
                 {gradeSyllabus.map((chapter) => (
@@ -1996,6 +2258,7 @@ function Practice({
   onUseLifeline,
   onDone,
   onOpenAiMistakeModal,
+  onSelectGrade,
 }: {
   data: AppData;
   onUseLifeline: (type: keyof LifelineInventory) => void;
@@ -2005,8 +2268,10 @@ function Practice({
     answer: string,
     onRetry: () => void
   ) => void;
+  onSelectGrade?: (g: string) => void;
 }) {
   const [, navigate] = useLocation();
+  const [selectedGrade, setSelectedGrade] = useState<string>(data.profile.grade || 'Grade 5');
   const [subjectFilter, setSubjectFilter] = useState<'All' | 'Math' | 'Science' | 'Nature' | 'Engineering'>('All');
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -2020,13 +2285,32 @@ function Practice({
   const [realLifeActive, setRealLifeActive] = useState(false);
   const [shieldActive, setShieldActive] = useState(false);
 
-  const filteredQuestions = useMemo(() => {
-    const bySubject = subjectFilter === 'All'
-      ? allPracticeQuestions
-      : allPracticeQuestions.filter((q) => q.subject === subjectFilter);
+  useEffect(() => {
+    if (data.profile.grade && data.profile.grade !== selectedGrade) {
+      setSelectedGrade(data.profile.grade);
+      setIndex(0);
+      resetQuestionState();
+    }
+  }, [data.profile.grade]);
 
-    return bySubject.filter((q) => gradeMatchesSelection(data.profile.grade, q.gradeLevel || q.grade));
-  }, [subjectFilter, data.profile.grade]);
+  const handleGradeChange = (newGrade: string) => {
+    setSelectedGrade(newGrade);
+    onSelectGrade?.(newGrade);
+    setIndex(0);
+    resetQuestionState();
+  };
+
+  const filteredQuestions = useMemo(() => {
+    const gradeSpecific = fullGradeQuestions.filter(
+      (item) => item.grade === selectedGrade || item.gradeLevel === selectedGrade
+    );
+    const pool = gradeSpecific.length > 0
+      ? gradeSpecific
+      : allPracticeQuestions.filter((item) => gradeMatchesSelection(selectedGrade, item.gradeLevel || item.grade));
+
+    if (subjectFilter === 'All') return pool;
+    return pool.filter((item) => item.subject === subjectFilter);
+  }, [selectedGrade, subjectFilter]);
 
   const q = filteredQuestions[Math.min(index, filteredQuestions.length - 1)] ?? null;
 
@@ -2143,6 +2427,49 @@ function Practice({
         <ArrowLeft size={16} /> Back home
       </button>
 
+      {/* Grade Syllabus Selector Ribbon */}
+      <div className="mb-5 p-4 rounded-2xl bg-white border border-[#E7E2D5] shadow-xs">
+        <div className="flex items-center justify-between mb-2.5 flex-wrap gap-2">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7B8394] block">
+              CLASS SYLLABUS SELECTOR · GRADES 1 TO 10
+            </span>
+            <h3 className="text-sm font-bold text-[#27314D] flex items-center gap-2">
+              <span>Practicing for <span className="text-[#3252A2] font-black underline decoration-2">{selectedGrade}</span></span>
+              {gradesList.find((g) => g.id === selectedGrade) && (
+                <span className="font-normal text-xs text-[#6F7788]">
+                  ({gradesList.find((g) => g.id === selectedGrade)?.ageRange} · {gradesList.find((g) => g.id === selectedGrade)?.badge})
+                </span>
+              )}
+            </h3>
+          </div>
+          <span className="text-xs px-2.5 py-1 rounded-full bg-[#EEF2FB] text-[#22449E] font-bold">
+            {filteredQuestions.length} Questions Available
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+          {gradesList.map((g) => {
+            const isSelected = selectedGrade === g.id;
+            return (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => handleGradeChange(g.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'bg-[#27314D] text-white shadow-sm ring-2 ring-[#27314D]/20 scale-102'
+                    : 'bg-[#F7F5EE] text-[#555E70] hover:bg-[#EFECE2] hover:text-[#27314D]'
+                }`}
+              >
+                <span>{g.badge.split(' ')[0]}</span>
+                <span>{g.id}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Subject Filter Switcher */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="filter-row mb-0">
@@ -2176,8 +2503,22 @@ function Practice({
           ))}
         </div>
 
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          <span className="px-2.5 py-0.5 rounded-full bg-[#EBF0FC] text-[#22449E] text-[11px] font-bold">
+            🎓 {selectedGrade}
+          </span>
+          <span className="px-2.5 py-0.5 rounded-full bg-[#F4F1EA] text-[#4E5668] text-[11px] font-bold">
+            {q.subject === 'Math' ? '📐 Mathematics' : q.subject === 'Science' ? '🔬 Science' : q.subject}
+          </span>
+          {q.chapter && (
+            <span className="px-2.5 py-0.5 rounded-full bg-[#FFF5DC] text-[#7E5E0F] text-[11px] font-bold">
+              📖 {q.chapter}
+            </span>
+          )}
+        </div>
+
         <div className="eyebrow">
-          {q.subject.toUpperCase()} · {q.topic.toUpperCase()} · {q.gradeLevel}
+          TOPIC: {q.topic.toUpperCase()}
         </div>
         <h1>Let’s see what<br />you’ve noticed.</h1>
 

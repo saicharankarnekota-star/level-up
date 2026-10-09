@@ -188,6 +188,7 @@ export interface AppData {
     activeMissionId?: string;
   };
   completedMissions: string[];
+  unlockedAdventureLevels?: number[];
   creations: Creation[];
   badges: string[];
   games: Record<string, number>;
