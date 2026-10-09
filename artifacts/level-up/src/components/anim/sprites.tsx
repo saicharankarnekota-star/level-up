@@ -195,7 +195,7 @@ const COIN_STYLE: Record<number, { face: string; rim: string; ink: string; inner
   10: { face: '#E9C46A', rim: '#C0C6CF', ink: '#6B4A0B', inner: '#E9C46A' },
 };
 
-export function Coin({ value, ...p }: SpriteProps & { value: number }) {
+export function Coin({ value, label = `₹${value}`, ...p }: SpriteProps & { value: number; label?: string }) {
   const id = useUid();
   const s = COIN_STYLE[value] ?? COIN_STYLE[1];
   return (
@@ -206,7 +206,7 @@ export function Coin({ value, ...p }: SpriteProps & { value: number }) {
       <circle cx="50" cy="52" r="46" fill="#00000022" />
       <circle cx="50" cy="50" r="46" fill={value === 10 ? '#C9CFD8' : `url(#o${id})`} stroke={s.rim} strokeWidth="3" />
       <circle cx="50" cy="50" r={value === 10 ? 32 : 38} fill={`url(#o${id})`} stroke={s.rim} strokeWidth="1.5" strokeDasharray={value === 10 ? undefined : '2 3'} />
-      <text x="50" y="62" textAnchor="middle" fontSize={value === 10 ? 30 : 34} fontWeight="800" fill={s.ink} fontFamily="'Space Grotesk', sans-serif">₹{value}</text>
+      <text x="50" y="62" textAnchor="middle" fontSize={value === 10 ? 30 : 34} fontWeight="800" fill={s.ink} fontFamily="'Space Grotesk', sans-serif">{label}</text>
     </Svg>
   );
 }
@@ -260,8 +260,27 @@ export const PATTERN_COLORS: Record<PatternKind, string> = {
   triangle: '#46A758', heart: '#F06595', diamond: '#12A4B8', leaf: '#2F9E44',
 };
 
-export function PatternShape({ kind, ...p }: SpriteProps & { kind: PatternKind }) {
-  const c = PATTERN_COLORS[kind];
+export function AnimalFace({ kind, ...p }: SpriteProps & { kind: 'dog' | 'cat' }) {
+  const dog = kind === 'dog';
+  const fur = dog ? '#C68B59' : '#F4A261';
+  return (
+    <Svg {...p} title={p.title ?? kind}>
+      {dog
+        ? <><ellipse cx="20" cy="40" rx="12" ry="24" fill="#7F5539" transform="rotate(15 20 40)" /><ellipse cx="80" cy="40" rx="12" ry="24" fill="#7F5539" transform="rotate(-15 80 40)" /></>
+        : <><path d="M16 44 L22 8 L44 28 Z" fill={fur} /><path d="M84 44 L78 8 L56 28 Z" fill={fur} /><path d="M22 36 L25 18 L36 30 Z" fill="#FFC8DD" /><path d="M78 36 L75 18 L64 30 Z" fill="#FFC8DD" /></>}
+      <ellipse cx="50" cy="56" rx="36" ry="34" fill={fur} />
+      <ellipse cx="50" cy="70" rx="18" ry="13" fill="#FFF1E6" />
+      <circle cx="37" cy="50" r="5" fill="#2B2D42" /><circle cx="63" cy="50" r="5" fill="#2B2D42" />
+      <circle cx="38.5" cy="48.5" r="1.6" fill="#fff" /><circle cx="64.5" cy="48.5" r="1.6" fill="#fff" />
+      <ellipse cx="50" cy="64" rx={dog ? 7 : 4} ry={dog ? 5 : 3} fill="#2B2D42" />
+      <path d="M50 68 Q44 76 40 72 M50 68 Q56 76 60 72" stroke="#2B2D42" strokeWidth="2" fill="none" strokeLinecap="round" />
+      {!dog && <path d="M20 62 H34 M20 70 H34 M66 62 H80 M66 70 H80" stroke="#6C584C" strokeWidth="1.5" />}
+    </Svg>
+  );
+}
+
+export function PatternShape({ kind, color, ...p }: SpriteProps & { kind: PatternKind; color?: string }) {
+  const c = color ?? PATTERN_COLORS[kind];
   const shape = {
     circle: <circle cx="50" cy="50" r="40" fill={c} />,
     square: <rect x="12" y="12" width="76" height="76" rx="10" fill={c} />,

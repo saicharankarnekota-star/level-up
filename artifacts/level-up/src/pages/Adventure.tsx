@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { ArrowLeft, ArrowRight, CheckCircle2, Eye, Heart, LockKeyhole, Play, RotateCcw, Swords, Volume2, VolumeX } from 'lucide-react';
 import type { Question, VisualizerKey, VisualizerParams } from '../types';
-import { mathAdventureLevels, type MathAdventureLevel, type StoryboardScene } from '../data/mathAdventureModules';
+import { mathAdventureLevels, type MathAdventureLevel } from '../data/mathAdventureModules';
 import { useProfile } from '../store/progress';
-import { prefetchSpeech, useAutoSpeak } from '../lib/speak';
+import { narrationState, prefetchSpeech, speak, useAutoSpeak } from '../lib/speak';
 import { PageTitle } from '../layout/AppShell';
 import { Visualizer } from '../components/visualizers';
 import { QuestionCard } from '../components/QuestionCard';
 import { NarrationToggle, NarrationTranscript } from '../components/NarrationTranscript';
+import { LottieSprite, type LottieName } from '../components/anim/LottieSprite';
+import { Celebrate } from '../components/anim/Celebrate';
+import { Dragon, SceneStage, type Answer } from '../components/adventure/scenes';
 import { NotFound } from './NotFound';
 
 const levelTopic: Record<number, string> = { 1: 'g1-add20', 2: 'g1-sub20', 3: 'g2-arrays', 4: 'g2-addsub100', 5: 'g2-addsub100' };
@@ -20,36 +23,16 @@ const levelHint: Record<number, string> = {
   5: 'Take your time. Use tens and ones, or count on and back.',
 };
 const exploreFor: Record<number, { kind: VisualizerKey; params: VisualizerParams; text: string }> = {
-  1: { kind: 'tenFrame', params: { a: 3, b: 2 }, text: 'Change the red and green counters. Watch the addition sentence update.' },
+  1: { kind: 'tenFrame', params: { a: 3, b: 2 }, text: 'Add red and green apples to the trays. Watch the addition sentence update.' },
   2: { kind: 'numberLine', params: { start: 8, hops: -3, max: 20 }, text: 'Pick a start and hop backwards. Where does the frog land?' },
-  3: { kind: 'array', params: { rows: 3, cols: 4 }, text: 'Build rows of stars. Count them by skip counting.' },
+  3: { kind: 'array', params: { rows: 3, cols: 4, item: 'crystal' }, text: 'Build rows of power crystals. Count them by skip counting.' },
   4: { kind: 'sortBins', params: { set: 'operations' }, text: 'Sort each story into the operation that solves it.' },
   5: { kind: 'numberLine', params: { start: 9, hops: 8, max: 20 }, text: 'Warm up for the battle: hop the frog and practise counting on.' },
 };
 
 const isUnlocked = (n: number, completed: number[]) => n === 1 || completed.includes(n - 1);
 
-function sceneVisual(g: StoryboardScene['visualGraphic']) {
-  const pictures: Partial<Record<StoryboardScene['visualGraphic'], string>> = {
-    apples_intro: '🍎🍎🍎     🍏🍏',
-    apples_add: '🍎🍎🍎 + 🍏🍏 = 🍎🍎🍎🍏🍏',
-    honey_intro: '🐻 🍯🍯🍯🍯🍯',
-    honey_takeaway: '🍯🍯🍯  ➡️ 🍯🍯 🐝',
-    spaceships_intro: '🚀💎💎💎💎\n🚀💎💎💎💎\n🚀💎💎💎💎',
-    repeated_addition: '💎💎💎💎 + 💎💎💎💎 + 💎💎💎💎 = 12',
-    kingdom_add: '🏰 🪙🪙 + 🪙🪙🪙',
-    kingdom_sub: '🏰 💎💎💎💎 ➡️ 💎💎',
-    kingdom_mul: '🏰 📦📦📦 × 3',
-    dragon_intro: '🐉🔥',
-    pause_interactive_add: '🧺 ❓',
-    pause_interactive_sub: '🍯 ❓',
-    pause_interactive_mul: '🚀 ❓',
-  };
-  if (g === 'number_line_forward') return <Visualizer kind="numberLine" params={{ start: 3, hops: 2, max: 10 }} />;
-  if (g === 'number_line_backward') return <Visualizer kind="numberLine" params={{ start: 5, hops: -2, max: 10 }} />;
-  if (g === 'array_grid') return <Visualizer kind="array" params={{ rows: 3, cols: 4 }} />;
-  return <div className="whitespace-pre-line py-6 text-center text-5xl leading-snug">{pictures[g] ?? '✨'}</div>;
-}
+const levelCharacter: Record<number, LottieName> = { 1: 'girl', 2: 'bear', 3: 'rocket', 4: 'castle', 5: 'dragon' };
 
 export function Adventure({ levelParam }: { levelParam?: string }) {
   const { profile } = useProfile();
@@ -63,7 +46,9 @@ export function Adventure({ levelParam }: { levelParam?: string }) {
             const done = profile.adventureCompleted.includes(l.levelNumber);
             const body = (
               <>
-                <div className={`grid h-28 place-items-center bg-gradient-to-br text-6xl ${l.bgGradient} ${unlocked ? '' : 'grayscale opacity-50'}`}>{l.icon}</div>
+                <div className={`grid h-28 place-items-center bg-gradient-to-br ${l.bgGradient} ${unlocked ? '' : 'grayscale opacity-50'}`}>
+                  <LottieSprite name={levelCharacter[l.levelNumber]} play={unlocked} label={l.character} className="h-24 w-36" />
+                </div>
                 <div className="p-4">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A92A2]">Level {l.levelNumber} · {l.subtitle}</div>
                   <h3 className="mt-1 font-['Space_Grotesk'] text-lg font-semibold text-[#232B40]">{l.title}</h3>
@@ -91,7 +76,7 @@ export function Adventure({ levelParam }: { levelParam?: string }) {
   if (!isUnlocked(n, profile.adventureCompleted)) {
     return (
       <div className="not-found page-enter">
-        <div className="text-6xl">🔒</div>
+        <LockKeyhole size={56} className="mx-auto text-[#8A92A2]" />
         <h1>Level {n} is locked</h1>
         <p>Clear level {n - 1} first to open the path.</p>
         <Link href={`/adventure/${n - 1}`} className="button button-yellow mt-4">Go to level {n - 1}</Link>
@@ -116,6 +101,8 @@ function AdventureLevel({ level }: { level: MathAdventureLevel }) {
   const sc = level.scenes[scene];
   const promptSolved = !sc.interactivePrompt || promptAnswer === sc.interactivePrompt.correct;
   const lastScene = scene === level.scenes.length - 1;
+  const answer: Answer = !sc.interactivePrompt || !promptAnswer ? null : promptAnswer === sc.interactivePrompt.correct ? 'correct' : 'wrong';
+  const say = useCallback((text: string) => { if (narrationState().auto) speak(text); }, []);
 
   useAutoSpeak(step === 'watch' ? sc.voiceOverScript : null);
   useEffect(() => prefetchSpeech(level.scenes[scene + 1]?.voiceOverScript), [level, scene]);
@@ -131,8 +118,13 @@ function AdventureLevel({ level }: { level: MathAdventureLevel }) {
       <Link href="/adventure" className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B7385] hover:text-[#27314D]"><ArrowLeft size={16} /> Adventure map</Link>
       <div className={`mt-3 rounded-3xl bg-gradient-to-br p-6 text-white ${level.bgGradient}`}>
         <div className="text-xs font-bold uppercase tracking-wider text-white/80">Level {n} · {level.subtitle}</div>
-        <h1 className="mt-1 font-['Space_Grotesk'] text-3xl font-semibold">{level.icon} {level.title}</h1>
-        <p className="mt-1 max-w-2xl text-sm text-white/85">{level.story}</p>
+        <div className="flex items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="mt-1 font-['Space_Grotesk'] text-3xl font-semibold">{level.title}</h1>
+            <p className="mt-1 max-w-2xl text-sm text-white/85">{level.story}</p>
+          </div>
+          <LottieSprite name={levelCharacter[n]} label={level.character} className="hidden h-24 w-32 shrink-0 sm:block" />
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
@@ -151,12 +143,12 @@ function AdventureLevel({ level }: { level: MathAdventureLevel }) {
               <div><div className="eyebrow">SCENE {scene + 1} OF {level.scenes.length}</div><h2 className="font-['Space_Grotesk'] text-xl font-semibold">{sc.title}</h2></div>
               <NarrationToggle />
             </div>
-            <div className="mt-4 rounded-2xl bg-white p-4">{sceneVisual(sc.visualGraphic)}</div>
+            <div className="mt-4"><SceneStage scene={sc} answer={answer} say={say} /></div>
             <p className="mt-4 text-center text-lg font-semibold text-[#27314D]">{sc.subtitle}</p>
             <div className="mt-4"><NarrationTranscript text={sc.voiceOverScript} title="Story narration" /></div>
             {sc.interactivePrompt && (
               <div className="mt-4 rounded-2xl bg-[#FFF7E6] p-4">
-                <b>⏸️ Your turn: {sc.interactivePrompt.question}</b>
+                <b className="inline-flex items-center gap-1.5"><Play size={15} className="fill-current" /> Your turn: {sc.interactivePrompt.question}</b>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {sc.interactivePrompt.choices.map((c) => (
                     <button key={c} type="button" disabled={promptSolved} onClick={() => setPromptAnswer(c)}
@@ -221,8 +213,9 @@ function Quiz({ level, onPass }: { level: MathAdventureLevel; onPass: () => void
   if (done) {
     const passed = correct >= need;
     return (
-      <div className="rounded-3xl border border-[#E5E1D7] bg-[#FFFDF8] p-8 text-center">
-        <div className="text-6xl">{passed ? level.icon : '💪'}</div>
+      <div className="relative overflow-hidden rounded-3xl border border-[#E5E1D7] bg-[#FFFDF8] p-8 text-center">
+        <Celebrate trigger={passed} />
+        <LottieSprite name={passed ? 'trophy' : levelCharacter[level.levelNumber]} loop={!passed} label={passed ? 'Trophy' : level.character} className="mx-auto h-28 w-28" />
         <h2 className="mt-3 font-['Space_Grotesk'] text-2xl font-semibold">{passed ? `Level ${level.levelNumber} cleared!` : 'Almost there!'}</h2>
         <p className="mt-1 text-[#6B7385]">{correct} of {questions.length} correct{passed ? '' : ` — you need ${need} to pass.`}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -256,14 +249,18 @@ function BossFight({ level, onWin }: { level: MathAdventureLevel; onWin: () => v
   const [hits, setHits] = useState(0);
   const [hearts, setHearts] = useState(3);
   const [outcome, setOutcome] = useState<'win' | 'lose' | null>(null);
+  const [lastHit, setLastHit] = useState<boolean | null>(null);
   const hp = Math.max(0, 100 - Math.round((hits / HITS_TO_WIN) * 100));
 
-  const reset = () => { setAttempt(attempt + 1); setI(0); setHits(0); setHearts(3); setOutcome(null); };
+  const reset = () => { setAttempt(attempt + 1); setI(0); setHits(0); setHearts(3); setOutcome(null); setLastHit(null); };
 
   if (outcome) {
     return (
-      <div className={`rounded-3xl p-8 text-center text-white ${outcome === 'win' ? 'bg-gradient-to-br from-[#2F7D4A] to-[#1B4D2E]' : 'bg-gradient-to-br from-[#9D0208] to-[#03071E]'}`}>
-        <div className="text-7xl">{outcome === 'win' ? '🏆' : '🐉'}</div>
+      <div className={`relative overflow-hidden rounded-3xl p-8 text-center text-white ${outcome === 'win' ? 'bg-gradient-to-br from-[#2F7D4A] to-[#1B4D2E]' : 'bg-gradient-to-br from-[#9D0208] to-[#03071E]'}`}>
+        <Celebrate trigger={outcome === 'win'} />
+        {outcome === 'win'
+          ? <LottieSprite name="trophy" loop={false} label="Trophy" className="mx-auto h-36 w-36" />
+          : <Dragon mood="fire" eventKey="lose" className="mx-auto h-36 w-56" />}
         <h2 className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold">{outcome === 'win' ? 'You tamed the Maths Dragon!' : 'The dragon survived this time'}</h2>
         <p className="mt-2 text-white/80">{outcome === 'win' ? 'Pyroth bows to the new Maths Champion.' : 'Rest, review, and try again. You can do it!'}</p>
         <button type="button" className="button button-yellow mt-6" onClick={reset}><RotateCcw size={15} /> {outcome === 'win' ? 'Battle again' : 'Try again'}</button>
@@ -275,7 +272,7 @@ function BossFight({ level, onWin }: { level: MathAdventureLevel; onWin: () => v
     <div>
       <div className="mb-4 rounded-3xl bg-gradient-to-br from-[#9D0208] to-[#03071E] p-5 text-white">
         <div className="flex items-center gap-4">
-          <div className={`text-6xl transition ${hits ? 'animate-[shake_.3s]' : ''}`} key={hits}>🐉</div>
+          <Dragon mood={lastHit === null ? 'idle' : lastHit ? 'hit' : 'fire'} eventKey={hits * 10 + hearts} className="h-24 w-36 shrink-0 sm:h-32 sm:w-48" />
           <div className="flex-1">
             <div className="flex justify-between text-xs font-bold"><span>Pyroth's shield</span><span>{hp}%</span></div>
             <div className="mt-1 h-3 overflow-hidden rounded-full bg-white/20"><div className="h-full bg-[#F4CF55] transition-all duration-500" style={{ width: `${hp}%` }} /></div>
@@ -285,7 +282,7 @@ function BossFight({ level, onWin }: { level: MathAdventureLevel; onWin: () => v
         </div>
       </div>
       <QuestionCard key={`${attempt}-${i}`} question={questions[i % questions.length]}
-        onAnswered={(ok) => (ok ? setHits((h) => h + 1) : setHearts((h) => h - 1))}
+        onAnswered={(ok) => { setLastHit(ok); if (ok) setHits((h) => h + 1); else setHearts((h) => h - 1); }}
         nextLabel="Next attack"
         onNext={() => {
           if (hits >= HITS_TO_WIN) { setOutcome('win'); onWin(); return; }
